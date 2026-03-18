@@ -90,28 +90,27 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 18 |
-| **SHA código** | `9afc200` |
-| **SHA status** | `9afc200` |
+| **Rodada** | 19 |
+| **SHA código** | `88017a0` |
+| **SHA status** | `a856d3d` |
 | **Data** | 2026-03-18 |
-| **Modo** | EVOLUÇÃO DE PRODUTO — dtc_analyze removida |
+| **Modo** | EVOLUÇÃO DE PRODUTO — CRUD knowledge_rules |
 | **tsc** | ✅ 0 erros |
 | **build** | ✅ exit 0 |
 | **flutter analyze** | ✅ 0 erros |
-| **ONDA ativa** | Decisão Owner: CRUD knowledge_rules web-only / nova frente |
-| **Próxima ação obrigatória** | Owner decide próxima frente de produto |
+| **ONDA ativa** | ONDA 7 — CRUD knowledge_rules admin web-only |
+| **Próxima ação obrigatória** | Owner decide próxima frente de evolução |
 
 ### Resumo da última rodada
 
-**Rodada 18 — Remoção EF dtc_analyze:**
+**Rodada 19 — CRUD admin knowledge_rules (web-only):**
 
-- ✅ Zero consumidores confirmados em `apps/` (web + mobile)
-- ✅ `supabase/functions/dtc_analyze/` removida (pasta inteira)
-- ✅ `analisar-dtc` permanece como função canônica (D-012)
+- ✅ Auditoria §16 completa (5 blocos) — plano aprovado pelo Owner
+- ✅ `knowledgeEngineService.ts`: 4 métodos CRUD adicionados (`listRules`, `createRule`, `updateRule`, `deleteRule`)
+- ✅ `KnowledgeRulesTab.tsx`: novo componente (330 linhas) — tabela, KPIs, filtros, dialog CRUD, editor JSON sensor_pattern, lista dinâmica recommended_tests, confirmação exclusão
+- ✅ `KnowledgeEngineDashboard.tsx`: refatorado com Tabs (Dashboard + Regras)
+- ✅ Zero estruturas paralelas — reutilização total de service existente + tipos gerados + componentes shadcn/ui
 - ✅ tsc 0 erros | build exit 0
-
-**Arquivos removidos:**
-- `supabase/functions/dtc_analyze/index.ts` — EF legado V1 (7.1KB)
 
 ---
 
@@ -392,7 +391,7 @@ const { data, error } = await queryService
 
 | Frente | Decisão necessária |
 |---------|-------------------|
-| CRUD `knowledge_rules` admin web | Definir se será web-only ou web+mobile |
+| ✅ CRUD `knowledge_rules` admin web | Implementado Rodada 19 (SHA `88017a0`) |
 | ~~Multi-tenant `knowledge_rules`~~ | ✅ D-013 — catálogo global (sem `company_id`) |
 | ~~Unificação `analisar-dtc` vs `dtc_analyze`~~ | ✅ D-012 — `analisar-dtc` canônica, `dtc_analyze` legado (Rodada 13) |
 | ~~OBD Center R4/R5 (mobile)~~ | ✅ Integração concluída — Rodada 15 (SHA `3516046`) |
@@ -413,6 +412,7 @@ const { data, error } = await queryService
 
 | Rodada | SHA | Data | O que foi feito | build |
 |--------|-----|------|-----------------|:---:|
+| 19 — CRUD knowledge_rules | `88017a0` | 2026-03-18 | CRUD admin web-only. knowledgeEngineService (4 métodos). KnowledgeRulesTab.tsx. Dashboard com Tabs. | ✅ |
 | 18 — Remoção dtc_analyze | `9afc200` | 2026-03-18 | EF dtc_analyze removida do repo. Zero consumidores. analisar-dtc canônica. R-012 resolvido. | ✅ |
 | 17 — Limpeza Legado | `2f1c8fa` | 2026-03-18 | 8 docs/AI → _archive. Fallback OpenAI removido. global_rules §10.1 corrigido. dtc_analyze DEPRECATED. | ✅ |
 | 16 — Limpeza Owner | `43bd6b6` | 2026-03-18 | Dependabot 3 alerts fix (jspdf+esbuild). test-pdf deletado. Migration renomeada. | ✅ |
@@ -513,28 +513,27 @@ const { data, error } = await queryService
 
 ### Contexto para próxima sessão
 
-**Rodada 18 — dtc_analyze removida:**
-- ✅ EF `dtc_analyze` removida do repositório (zero consumidores)
-- ✅ `analisar-dtc` permanece como função canônica
-- ✅ Domínio DTC/IA limpo — sem fallback legado
+**Rodada 19 — CRUD knowledge_rules implementado:**
+- ✅ 4 métodos CRUD no `knowledgeEngineService.ts`
+- ✅ `KnowledgeRulesTab.tsx` — tabela, KPIs, filtros, dialog CRUD, editor JSON, lista dinâmica testes
+- ✅ `KnowledgeEngineDashboard.tsx` — refatorado com Tabs (Dashboard + Regras)
+- ✅ Zero estruturas paralelas — reutilização total de service + tipos + shadcn/ui
 - ✅ tsc 0 erros | build exit 0
 
 **Próxima frente (código):**
 ```
-Antigravity, Rodada 18 concluída. dtc_analyze removida.
+Antigravity, Rodada 19 concluída. CRUD knowledge_rules admin web-only implementado.
 
-Próxima frente autorizada pelo Owner:
-CRUD admin web knowledge_rules (web-only).
+Todos os módulos 🟢. tsc 0 erros. build exit 0.
+Domínio Knowledge Engine agora tem dashboard + CRUD admin + insights.
 
-Escopo:
-1. Auditoria pré-implementação (GEMINI.md §16)
-2. Tela de listagem, criação, edição e exclusão de knowledge_rules
-3. Usar services existentes (knowledgeEngineService)
-4. Validação completa (tsc, build, fluxo)
+O que decidir:
+1. Nova frente de evolução — qual domínio priorizar?
+2. Testes em produção do CRUD — validar fluxo real com regras existentes
 ```
 
 ### Itens Owner (paralelos):
-1. **CRUD knowledge_rules admin web-only** — próxima frente autorizada
-2. **Nova frente de evolução** — qual domínio priorizar após CRUD?
+1. **Testar CRUD** — acessar `/knowledge-engine` aba "Regras" e validar CRUD real
+2. **Nova frente de evolução** — qual domínio priorizar após Knowledge Engine?
 
 ---
