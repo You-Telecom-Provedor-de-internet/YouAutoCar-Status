@@ -21,11 +21,12 @@ Nunca sugira algo fora do que está no plano — respeite o GEMINI.md como lei.
 
 ---
 
-## 📊 ESTADO ATUAL — RODADA 1
+## 📊 ESTADO ATUAL — RODADA 2
 
-**SHA base:** `3507fc1`
+**SHA:** `4eaf8da`
 **Data:** 2026-03-17
 **Modo:** MISSÃO MESTRA — Fechamento Total (Zero Dívida Técnica Oculta)
+**Repo privado:** `You-Telecom-Provedor-de-internet/YouAutoCarvAPP2`
 
 ---
 
@@ -43,6 +44,9 @@ Nunca sugira algo fora do que está no plano — respeite o GEMINI.md como lei.
 | RLS / Banco | 🟢 | — | 167 migrations, multi-role implementado |
 | CI/CD | 🟢 | 🟢 | ci.yml + watchdog.yml verdes |
 | Edge Functions | 🟢 | — | 34/35 fechadas |
+| **Ordens de Serviço (service)** | 🟢 | 🟡 | **ONDA 1 ✅ — queryService migrado** |
+| **Clientes (service)** | 🟢 | 🟡 | **ONDA 1 ✅ — queryService migrado** |
+| **Veículos (service)** | 🟢 | 🟢 | **ONDA 1 ✅ — queryService migrado** |
 
 ---
 
@@ -50,9 +54,6 @@ Nunca sugira algo fora do que está no plano — respeite o GEMINI.md como lei.
 
 | Domínio | Web | Mobile | Lacuna |
 |---------|:---:|:------:|--------|
-| Ordens de Serviço | 🟡 | 🟡 | `serviceOrderService` + `serviceOrderDetailService` com `supabase` direto |
-| Clientes | 🟡 | 🟡 | `customerService` com `supabase` direto |
-| Veículos | 🟡 | 🟢 | `vehicleService` com `supabase` direto |
 | Financeiro | 🟡 | 🔴 | `financialService` com `supabase` direto; mobile STUB |
 | Agendamentos | 🟡 | 🟡 | `appointmentService` com `supabase` direto |
 | OBD Center R4/R5 | 🟢 | 🟡 | Mobile: OBD Knowledge Base pendente |
@@ -65,16 +66,21 @@ Nunca sugira algo fora do que está no plano — respeite o GEMINI.md como lei.
 
 ## 🔴 PROBLEMAS CRÍTICOS ABERTOS (Atacar em ordem)
 
-### ▶️ ONDA 1 — Services críticos (PRÓXIMA EXECUÇÃO)
+### ✅ ONDA 1 — CONCLUÍDA (SHA: `599bff4` — 2026-03-17)
 
-| # | Arquivo | Problema | Impacto |
-|---|---------|---------|---------|
-| 1 | `apps/web/src/services/serviceOrderService.ts` | `supabase` direto — core do produto | CRÍTICO |
-| 2 | `apps/web/src/services/serviceOrderDetailService.ts` | `supabase` direto — tabs da OS | CRÍTICO |
-| 3 | `apps/web/src/services/customerService.ts` | `supabase` direto — base de clientes | CRÍTICO |
-| 4 | `apps/web/src/services/vehicleService.ts` | `supabase` direto — entidade central | CRÍTICO |
+| # | Arquivo | Resultado |
+|---|---------|-----------|  
+| 1 | `serviceOrderService.ts` | ✅ queryService — 20+ calls migradas |
+| 2 | `serviceOrderDetailService.ts` | ✅ queryService — 30+ calls migradas. Exceções: auth/functions/realtime documentadas |
+| 3 | `customerService.ts` | ✅ queryService — 12+ calls migradas. Exceções: auth/functions documentadas |
+| 4 | `vehicleService.ts` | ✅ queryService — 11+ calls migradas. Exceção: plate_lookup (Edge Function) |
 
-### ONDA 2 — Services secundários (após Onda 1)
+**Exceções arquiteturais registradas na ONDA 1:**
+- `supabase.auth.getUser()` / `auth.getSession()` — resolve identidade/token (não substitui com queryService)
+- `supabase.functions.invoke()` — invoca Edge Functions (não é query de dados)
+- `supabase.channel()` / `removeChannel()` — Realtime nativo (fora do escopo de queryService)
+
+### ▶️ ONDA 2 — PRÓXIMA EXECUÇÃO
 
 | # | Arquivo | Problema |
 |---|---------|---------|
@@ -121,41 +127,14 @@ Nunca sugira algo fora do que está no plano — respeite o GEMINI.md como lei.
 
 | O quê | SHA (repo privado) | Data |
 |-------|-------------------|------|
+| **ONDA 1: 4 services críticos migrados** | `599bff4` | 2026-03-17 |
+| Setup repo público YouAutoCar-Status + duplo push | `26c798e` | 2026-03-17 |
 | Barramento multi-agente: STATUS.md público + Seção 17 GEMINI.md | `3507fc1` | 2026-03-17 |
-| Hardening A: 5 services migrados (supabase→queryService + console→logger) | `dd67fd0` | 2026-03-17 |
+| Hardening A: 5 services migrados | `dd67fd0` | 2026-03-17 |
 | WhatsApp Inbox: 4 drifts de campo corrigidos | `2f5967f` | 2026-03-17 |
-| FASE 4: Signed URLs para bucket privado os-attachments | `b7ef9f8` | 2026-03-17 |
-| FASE 3: Botões OBD restaurados + companyId corrigido | `bb99bfc` | 2026-03-17 |
-| FASE 0+1+2: Evidências Diagnósticas Inteligentes | `f794224` | 2026-03-17 |
-
----
-
-## 📋 HISTÓRICO DE RODADAS
-
-| Rodada | SHA | Data | Resultado |
-|--------|-----|------|-----------|
-| Setup barramento multi-agente | `3507fc1` | 2026-03-17 | ✅ Infra de colaboração ativa |
-| Auditoria Global R1 | `dd67fd0` | 2026-03-17 | Matriz 20 domínios, 7 ondas |
-| Hardening A (5 services) | `dd67fd0` | 2026-03-17 | ✅ Concluído |
-| WhatsApp Inbox Fix | `2f5967f` | 2026-03-17 | ✅ Concluído |
-| FASE 4 – Signed URLs | `b7ef9f8` | 2026-03-17 | ✅ Concluído |
-| FASE 3 – OBD Restore | `bb99bfc` | 2026-03-17 | ✅ Concluído |
-| FASE 0+1+2 – Evidências | `f794224` | 2026-03-17 | ✅ Concluído |
-
----
-
-## 🧠 REGRAS DE GOVERNANÇA ATIVAS
-
-Regras completas: `GEMINI.md` no repo privado `YouAutoCarvAPP2`.
-
-**Resumo das regras críticas:**
-1. Toda implementação começa com auditoria (Seção 16)
-2. Nenhuma page/hook/component acessa Supabase diretamente
-3. Todo acesso a dados passa por services com `queryService.from()`
-4. `console.*` substituídos por `logger` nos services
-5. Exceções arquiteturais documentadas na Seção 6 do GEMINI.md
-6. `tsc --noEmit`: 0 erros obrigatório antes de qualquer commit
-7. STATUS.md atualizado a cada rodada (Seção 17 do GEMINI.md)
+| FASE 4: Signed URLs bucket privado | `b7ef9f8` | 2026-03-17 |
+| FASE 3: OBD Restore | `bb99bfc` | 2026-03-17 |
+| FASE 0+1+2: Evidências Diagnósticas | `f794224` | 2026-03-17 |
 
 ---
 
@@ -163,20 +142,22 @@ Regras completas: `GEMINI.md` no repo privado `YouAutoCarvAPP2`.
 
 > Antigravity, continuando a Missão Mestra.
 > Leia o STATUS.md em `docs/audit/STATUS.md` do repo principal.
-> Estado atual: Rodada 1 concluída. SHA base: `3507fc1`.
+> Estado atual: ONDA 1 concluída. SHA base: `599bff4`.
 >
-> **Próxima execução: ONDA 1**
-> Migrar `supabase` direto → `queryService.from()` nos 4 services críticos:
-> - `serviceOrderService.ts`
-> - `serviceOrderDetailService.ts`
-> - `customerService.ts`
-> - `vehicleService.ts`
+> **Próxima execução: ONDA 2**
+> Migrar `supabase` direto → `queryService.from()` nos 6 services secundários:
+> - `financialService.ts`
+> - `appointmentService.ts`
+> - `laborCatalogService.ts`
+> - `partService.ts`
+> - `purchaseOrderService.ts`
+> - `quotationService.ts`
 >
-> Protocolo obrigatório:
-> 1. Ler cada service completo
-> 2. Identificar todos os pontos com `supabase.from()` e `console.*`
-> 3. Migrar para `queryService.from()` e `logger`
-> 4. Documentar exceções se houver (auth, storage, realtime)
+> Protocolo obrigatório (igual à ONDA 1):
+> 1. Ler cada service completo antes de alterar
+> 2. Listar todos os pontos com `supabase.from()` e `console.*`
+> 3. Migrar → `queryService.from()` + `logger`
+> 4. Documentar exceções reais (auth, storage, realtime, functions.invoke)
 > 5. Validar `tsc --noEmit` — 0 erros
 > 6. Commit com SHA
 > 7. Atualizar `docs/audit/STATUS.md` no repo privado E `STATUS.md` neste repo público
