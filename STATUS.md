@@ -90,25 +90,26 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 9 |
-| **SHA código** | `689c529` |
-| **SHA status** | `689c529` |
+| **Rodada** | 10 |
+| **SHA código** | `689c529` (código inalterado — rodada de auditoria documental) |
+| **SHA status** | `f748be1` |
 | **Data** | 2026-03-18 |
-| **Modo** | EVOLUÇÃO DE PRODUTO — ONDA 7 Fase 2 ✅ |
-| **build** | ✅ exit 0 (tsc --noEmit 0 erros) |
-| **ONDA ativa** | ONDA 7 Fase 2 ✅ — Fase 3+ pendente (Owner) |
-| **Próxima ação obrigatória** | Fase 3: decisões Owner (CRUD knowledge_rules, unificação edge functions) |
+| **Modo** | EVOLUÇÃO DE PRODUTO — Auditoria Documental |
+| **build** | ✅ exit 0 (inalterado — zero código tocado) |
+| **ONDA ativa** | ONDA 7 Fase 3+ pendente (Owner) + Limpeza Documental |
+| **Próxima ação obrigatória** | Owner decide: arquivar/deletar/depreciar 18 docs legado |
 
 ### Resumo da última rodada
 
-**ONDA 7 Fase 2 — Remoção de casts e validação de services:**
-- **Casts `as unknown as ...` removidos** de `knowledgeEngineService.ts` e `crossOsPatternsService.ts`
-- **Justificativa**: `queryService.rpc()` aceita `(fn: string, params?)` genérico — cast na chamada era desnecessário
-- **Cast de retorno mantido** (legítimo — tipa dados para interfaces locais)
-- **EX-011 e EX-012 resolvidos** — exceções não são mais necessárias
-- **tsc --noEmit**: 0 erros
-- **npm run build**: exit 0
-- **SHA**: `5e61f02`
+**Rodada 10 — Auditoria Documental Completa:**
+- **250+ documentos mapeados** em docs/, .agents/, raiz
+- **4 classes definidas**: Governança, Referência, Execução, Legado
+- **18 documentos identificados como LEGADO** (perigosos ou obsoletos)
+- **4 conflitos críticos de autoridade** documental detectados
+- **7 riscos documentais** catalogados (RD-001 a RD-007)
+- **Hierarquia final proposta** com 5 camadas
+- **Zero arquivos alterados** — apenas mapeamento e classificação
+- **Artefato**: `auditoria_documental_completa.md`
 
 ---
 
@@ -390,6 +391,7 @@ const { data, error } = await queryService
 
 | Rodada | SHA | Data | O que foi feito | build |
 |--------|-----|------|-----------------|:---:|
+| 10 — Auditoria Doc | `f748be1` | 2026-03-18 | 250+ docs mapeados. 18 legado. 4 conflitos. Hierarquia 5 camadas proposta. Zero alterações. | ✅ |
 | 9 — ONDA 7F2 | `689c529` | 2026-03-18 | Casts removidos de knowledgeEngineService + crossOsPatternsService. EX-011/EX-012 resolvidos. | ✅ |
 | 8B — Integração Doc | `2c44e1e` | 2026-03-18 | GEMINI.md §16 + STATUS.md + AGENT_MASTER_CONTROL + 07_GOVERNANCA + COMANDOS_RAPIDOS integrados. Hierarquia D-004/D-005 | ✅ |
 | 8 — ONDA 7F1 | `f1b6ce9` | 2026-03-18 | 5 RPCs fantasma criadas. Knowledge Engine + Cross-OS desbloqueados. | ✅ |
@@ -422,6 +424,7 @@ const { data, error } = await queryService
 | D-007 | Repo público YouAutoCar-Status é o canal oficial ChatGPT→Antigravity | 2026-03-17 | `3507fc1` |
 | D-008 | Hierarquia documental formalizada: GEMINI.md=lei, STATUS.md=memória, 10_AI_STRATEGY=direção, .agents/=operação | 2026-03-18 | `2c44e1e` |
 | D-009 | `docs/10_AI_STRATEGY/` é fonte **obrigatória** de contexto antes de features IA (GEMINI.md §16) | 2026-03-18 | `2c44e1e` |
+| D-010 | **Autoridade documental formalizada**: `docs/AI/` inteira é LEGADO — nenhum agente deve usar como fonte de decisão. `00_START_HERE.md` é LEGADO. Fontes confiáveis: GEMINI.md + STATUS.md + 10_AI_STRATEGY + .agents/ | 2026-03-18 | Rodada 10 |
 
 ---
 
@@ -437,6 +440,9 @@ const { data, error } = await queryService
 | R-006 | ~~`diagnosticUploadService` + `evidenceService` com supabase.storage direto~~ | ~~BAIXO~~ | ✅ RESOLVIDO — EX-009 (ONDA 3) | — |
 | R-007 | ~~OBD Knowledge Base sem auditoria prévia~~ | ~~MÉDIO~~ | ✅ RESOLVIDO — Auditoria + Fase 1 CONCLUÍDAS | ONDA 7 |
 | R-008 | ~~20 components web com console.* residual~~ | ~~BAIXO~~ | ✅ RESOLVIDO — ONDA 6A | — |
+| R-009 | **18 documentos legado** podem causar decisões erradas se lidos por agentes (docs/AI/, 00_START_HERE, AI_DEVELOPMENT_WORKFLOW). Auditoria completa em artefato Rodada 10 | **ALTO** | Auditoria concluída. Owner decide ação (arquivar/deletar/depreciar) | Owner |
+| R-010 | `global_rules.md` §5/§10.1 referencia milestones antigos e `AI_CONTEXT_SNAPSHOT.md` como fonte — conflita com GEMINI.md §17/18 | **ALTO** | Detectado. Requer atualização | Limpeza |
+| R-011 | `SERVICES_AND_DATA_ACCESS.md` exemplifica `supabase.from()` em services — padrão legado. Deveria ser `queryService.from()` | **MÉDIO** | Detectado. Requer atualização | Limpeza |
 
 ---
 
@@ -447,42 +453,66 @@ const { data, error } = await queryService
 
 ---
 
-## ONDA 7 — OBD Knowledge Base
+### ⚠️ FONTES CONFIÁVEIS (D-010)
 
-### Fase 1 ✅ CONCLUÍDA (SHA `f1b6ce9`)
-- 5 RPCs fantasma criadas no banco
-- Dashboards `KnowledgeEngineDashboard` e `CrossOsPatternsDashboard` desbloqueados
+| Confiável | Não confiável |
+|-----------|---------------|
+| `GEMINI.md` | `docs/AI/*` (toda a pasta) |
+| `docs/audit/STATUS.md` | `docs/00_START_HERE.md` |
+| `docs/10_AI_STRATEGY/*` | `docs/01_GOVERNANCE/AI_DEVELOPMENT_WORKFLOW.md` |
+| `.agents/rules/AGENT_MASTER_CONTROL.md` | `docs/01_GOVERNANCE/architecture_rules.md` |
+| `docs/01_GOVERNANCE/ROLE_PERMISSION_MATRIX.md` | `.agents/rules/global_rules.md` §5 e §10.1 |
+| `docs/03_DB/CANONICAL_CONTRACTS.md` | |
 
-### Fase 2 ✅ CONCLUÍDA (SHA `5e61f02`)
-- Casts `as unknown as ...` removidos de ambos services
-- EX-011 e EX-012 resolvidos
-- tsc 0 erros + build exit 0
+---
 
-### Próxima sessão — Fase 3+ (requer decisões Owner)
+### Contexto para próxima sessão
 
-Prompt sugerido:
+**Rodada 10 — Auditoria Documental:**
+- 250+ documentos mapeados
+- 18 docs LEGADO identificados (risco alto)
+- 4 conflitos críticos de autoridade documental
+- Artefato completo: `auditoria_documental_completa.md`
+- Zero arquivos alterados
+
+**Decisões pendentes Owner (2 frentes):**
+
+**Frente 1 — Limpeza documental (R-009):**
+```
+Antigravity, auditoria documental concluída (Rodada 10).
+
+Owner decidiu: [OPÇÃO]
+
+Opções:
+A) ARQUIVAR — mover 18 docs legado para docs/_ARCHIVE/
+B) DEPRECIAR — adicionar banner ⚠️ LEGADO no topo de cada arquivo
+C) DELETAR — remover docs legado do repositório
+D) MISTO — arquivar docs/AI/, depreciar inline os de governance
+
+Adicionalmente:
+1. Atualizar global_rules.md §5/§10.1 (remover referências a AI_CONTEXT_SNAPSHOT)
+2. Atualizar SERVICES_AND_DATA_ACCESS.md (queryService em vez de supabase.from)
+3. Remover schema_dump_temp.sql e teste01.pdf (lixo técnico)
+
+Executar conforme decisão Owner + commit + push STATUS.
+```
+
+**Frente 2 — ONDA 7 Fase 3+ (código):**
 ```
 Antigravity, ONDA 7 Fase 2 concluída.
-
-Leia o STATUS.md em:
-https://raw.githubusercontent.com/You-Telecom-Provedor-de-internet/YouAutoCar-Status/main/STATUS.md
 
 Decisões Owner necessárias para prosseguir:
 1. CRUD `knowledge_rules` — web-only ou web+mobile?
 2. Multi-tenant `knowledge_rules` — regras por company ou globais?
 3. Unificação `analisar-dtc` vs `dtc_analyze` — auditar duplicação
 4. OBD Center R4/R5 mobile — integração com Knowledge Base
-
-Enquanto Owner decide, executar:
-- Auditar Dependabot alerts (R-002: 1 critical, 1 high, 1 moderate)
-- Avaliar remoção do Edge Function `test-pdf` (R-003)
-- ONDA 8 ou próxima frente técnica autorizada
 ```
 
 ### Itens Owner (paralelos):
-1. **Dependabot alerts** — 1 critical, 1 high, 1 moderate
-2. **Edge Function `test-pdf`** em produção sem consumidores
-3. **Migrations duplicadas** `20260310000000` — renomear
-4. **CRUD knowledge_rules** — decisão de escopo
+1. **Limpeza documental** — decidir destino dos 18 docs legado
+2. **Dependabot alerts** — 1 critical, 1 high, 1 moderate
+3. **Edge Function `test-pdf`** — remover?
+4. **Migrations duplicadas** `20260310000000` — renomear?
+5. **CRUD knowledge_rules** — decisão de escopo
 
 ---
