@@ -90,29 +90,32 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 14 |
-| **SHA código** | `23ad8c3` |
-| **SHA status** | `79bc4cd` |
+| **Rodada** | 15 |
+| **SHA código** | `3516046` |
+| **SHA status** | `17c878b` |
 | **Data** | 2026-03-18 |
-| **Modo** | EVOLUÇÃO DE PRODUTO — ONDA 7 Fase 4 Concluída |
+| **Modo** | EVOLUÇÃO DE PRODUTO — ONDA 7 Fase 5 Concluída |
 | **tsc** | ✅ 0 erros |
 | **build** | ✅ exit 0 |
 | **flutter analyze** | ✅ 0 erros |
-| **ONDA ativa** | ONDA 7 Fase 5+ pendente (Owner) |
-| **Próxima ação obrigatória** | Owner decide: CRUD admin web / OBD Center R4/R5 mobile |
+| **ONDA ativa** | ONDA 7 Fase 5 Concluída — CRUD admin pendente (Owner) |
+| **Próxima ação obrigatória** | Owner decide: CRUD admin web knowledge_rules / nova frente |
 
 ### Resumo da última rodada
 
-**Rodada 14 — ONDA 7 Fase 4: knowledge_rules Amadurecido (D-013):**
+**Rodada 15 — ONDA 7 Fase 5: OBD Center R4/R5 Knowledge Base Mobile:**
 
-- ✅ Migration `20260318100000_knowledge_rules_updated_at.sql` aplicada no Supabase
-- ✅ Coluna `updated_at` + trigger `set_updated_at()` adicionados
-- ✅ Web: `eslint-disable as any` removido de `KnowledgeInsightsPanel.tsx` — tipagem nativa
-- ✅ D-013: `knowledge_rules` é catálogo global — sem `company_id`
+- ✅ R4: `ObdCenterController` expandido com `knowledgeInsights`, `fetchKnowledgeInsights()`, `insightForDtc()`
+- ✅ R5: `KnowledgeInsightsCard` criado (239 linhas) — design premium com badges de confiança e testes recomendados
+- ✅ Widget integrado no `ObdCenterTabWidget` entre DTCs e Freeze Frame
+- ✅ Reutilização total: `DiagnosticKnowledgeService.evaluate()` + `DtcKnowledgeBase` + `compositeProfileProvider`
+- ✅ Zero estruturas paralelas, zero tabelas novas, zero Edge Functions novas
 
 **Arquivos alterados:**
-- `KnowledgeInsightsPanel.tsx` — removido `eslint-disable` e `as any` cast
-- `20260318100000_knowledge_rules_updated_at.sql` — nova migration
+- `obd_center_controller.dart` — expandido (+85 linhas)
+- `obd_center_controller.g.dart` — regenerado pelo build_runner
+- `knowledge_insights_card.dart` — NOVO (239 linhas)
+- `obd_center_tab_widget.dart` — integração R5 (+10 linhas)
 
 ---
 
@@ -174,7 +177,7 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 |---------|:---:|-----------|
 | Login / Auth | 🟢 | Riverpod + Supabase Auth ok |
 | OBD ELM327 | 🟢 | Bluetooth RFCOMM. ELM327 commands ok |
-| OBD Center (UI) | 🟡 | R4/R5 pendentes — OBD Knowledge Base |
+| OBD Center (UI) | 🟢 | R1–R5 completos. R4: Knowledge insights por DTC. R5: KnowledgeInsightsCard |
 | Viagens / Telemetria | 🟢 | Trip sessions ok |
 | Alertas OBD | 🟢 | Engine ok. Thresholds por perfil |
 | Catálogo MO | 🔴 | Web-only — decisão formal |
@@ -396,7 +399,17 @@ const { data, error } = await queryService
 | CRUD `knowledge_rules` admin web | Definir se será web-only ou web+mobile |
 | ~~Multi-tenant `knowledge_rules`~~ | ✅ D-013 — catálogo global (sem `company_id`) |
 | ~~Unificação `analisar-dtc` vs `dtc_analyze`~~ | ✅ D-012 — `analisar-dtc` canônica, `dtc_analyze` legado (Rodada 13) |
-| OBD Center R4/R5 (mobile) | Integração mobile com Knowledge Base |
+| ~~OBD Center R4/R5 (mobile)~~ | ✅ Integração concluída — Rodada 15 (SHA `3516046`) |
+
+#### ✅ Fase 5 — OBD Center R4/R5 Mobile (SHA `3516046`)
+
+| Item | Status |
+|------|--------|
+| R4: `ObdCenterController` expandido com Knowledge Engine | ✅ Concluído |
+| R5: `KnowledgeInsightsCard` criado e integrado | ✅ Concluído |
+| Reutilização: `DiagnosticKnowledgeService` + `DtcKnowledgeBase` | ✅ Zero estruturas paralelas |
+| flutter analyze | ✅ 0 erros |
+| build_runner | ✅ exit 0 (191 outputs) |
 
 ---
 
@@ -404,6 +417,7 @@ const { data, error } = await queryService
 
 | Rodada | SHA | Data | O que foi feito | build |
 |--------|-----|------|-----------------|:---:|
+| 15 — ONDA 7F5 R4/R5 | `3516046` | 2026-03-18 | OBD Center R4/R5: Knowledge insights + KnowledgeInsightsCard. Zero estruturas novas. | ✅ |
 | 14 — ONDA 7F4 | `23ad8c3` | 2026-03-18 | updated_at + trigger. Tipagem web corrigida. D-013 catálogo global. | ✅ |
 | 13 — ONDA 7F3 DTC | `780b5e6` | 2026-03-18 | D-012: analisar-dtc canônica, dtc_analyze legado. Mobile migrado. Banner legado. | ✅ |
 | 12 — Validação ONDA 7 | `7192854` | 2026-03-18 | 5/5 RPCs testadas no Supabase. 2/2 services OK. 2/2 dashboards HTTP 200. tsc 0 erros. build exit 0. Zero código alterado. | ✅ |
@@ -498,21 +512,22 @@ const { data, error } = await queryService
 
 ### Contexto para próxima sessão
 
-**Rodada 14 — ONDA 7 Fase 4 Concluída:**
-- ✅ `updated_at` + trigger adicionados a `knowledge_rules`
-- ✅ Tipagem web corrigida (`eslint-disable as any` removido)
-- ✅ D-013: knowledge_rules é catálogo global (sem company_id)
-- ✅ tsc 0 erros | build exit 0
+**Rodada 15 — ONDA 7 Fase 5 Concluída:**
+- ✅ OBD Center R4: Knowledge insights por DTC via `DiagnosticKnowledgeService`
+- ✅ OBD Center R5: `KnowledgeInsightsCard` integrado na UI
+- ✅ flutter analyze 0 erros | build_runner exit 0
+- ✅ OBD Center mobile completo (R1-R5)
 
-**Próxima frente — ONDA 7 Fase 5+ (código):**
+**Próxima frente — ONDA 7 Fase 6+ (código):**
 ```
-Antigravity, ONDA 7 Fases 1-4 concluídas (Rodada 14).
+Antigravity, ONDA 7 Fases 1-5 concluídas (Rodada 15).
 
-knowledge_rules amadurecido: updated_at, trigger, tipagem, decisão global (D-013).
+OBD Center R1-R5 completo: DTCs, Freeze Frame, Mode 06, Vehicle Info, IA Contextual, Knowledge Insights.
 
 Decisões Owner necessárias para prosseguir:
 1. CRUD knowledge_rules admin web — construir tela de gestão?
-2. OBD Center R4/R5 mobile — integração com Knowledge Base
+2. Fase 3C — avaliar remoção do fallback dtc_analyze no web
+3. Nova frente de evolução — qual domínio priorizar?
 ```
 
 ### Itens Owner (paralelos):
