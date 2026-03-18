@@ -90,34 +90,28 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 17 |
-| **SHA código** | `2f1c8fa` |
-| **SHA status** | `2f1c8fa` |
+| **Rodada** | 18 |
+| **SHA código** | `9afc200` |
+| **SHA status** | `9afc200` |
 | **Data** | 2026-03-18 |
-| **Modo** | EVOLUÇÃO DE PRODUTO — Limpeza de Legado Concluída |
+| **Modo** | EVOLUÇÃO DE PRODUTO — dtc_analyze removida |
 | **tsc** | ✅ 0 erros |
 | **build** | ✅ exit 0 |
 | **flutter analyze** | ✅ 0 erros |
-| **ONDA ativa** | Limpeza de Legado Concluída — Aguardando decisão próxima frente |
-| **Próxima ação obrigatória** | Owner decide: CRUD admin web knowledge_rules / nova frente |
+| **ONDA ativa** | Decisão Owner: CRUD knowledge_rules web-only / nova frente |
+| **Próxima ação obrigatória** | Owner decide próxima frente de produto |
 
 ### Resumo da última rodada
 
-**Rodada 17 — Limpeza de Legado Documental e Técnico:**
+**Rodada 18 — Remoção EF dtc_analyze:**
 
-- ✅ `docs/AI/` 8 arquivos → arquivados em `_archive/` + README explicativo
-- ✅ `00_START_HERE.md` → refs a `docs/AI/` removidas, hierárquia corrigida
-- ✅ `global_rules.md` §10.1 → fontes canônicas atualizadas (GEMINI.md, STATUS.md, 10_AI_STRATEGY)
-- ✅ `dtcAiService.ts` → fallback OpenAI removido (-55 linhas), tipo `'openai'` removido
-- ✅ EF `dtc_analyze` → banner DEPRECATED reforçado (zero consumidores)
+- ✅ Zero consumidores confirmados em `apps/` (web + mobile)
+- ✅ `supabase/functions/dtc_analyze/` removida (pasta inteira)
+- ✅ `analisar-dtc` permanece como função canônica (D-012)
+- ✅ tsc 0 erros | build exit 0
 
-**Arquivos alterados:**
-- `docs/AI/_archive/` — 8 arquivos movidos
-- `docs/AI/README.md` — NOVO (explicativo)
-- `docs/00_START_HERE.md` — seções AI removidas
-- `.agents/rules/global_rules.md` — §10.1 corrigido
-- `apps/web/src/services/dtcAiService.ts` — fallback OpenAI removido (-55 linhas)
-- `supabase/functions/dtc_analyze/index.ts` — banner DEPRECATED reforçado
+**Arquivos removidos:**
+- `supabase/functions/dtc_analyze/index.ts` — EF legado V1 (7.1KB)
 
 ---
 
@@ -167,7 +161,7 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 | Configurações | 🟢 | 🟢 | ONDA 5 ✅ — 5 console.error → logger.error |
 | Observabilidade (pages) | 🟢 | 🟢 | ONDA 5 ✅ — 39 pages. ~120 console.* removidos. Zero violações |
 | Observabilidade (components) | 🟢 | 🟢 | ONDA 6A ✅ — 20 components. 29 console.* removidos. UI 100% limpa |
-| Edge Functions | 🟢 | — | 34/35 fechadas. test-pdf em produção (remoção: Owner) |
+| Edge Functions | 🟢 | — | 34/34 ativas. dtc_analyze removida R18. test-pdf removida R16. |
 | RLS / Banco | 🟢 | — | 167+ migrations. Multi-role implementado. ROLE_PERMISSION_MATRIX vigente |
 | CI/CD | 🟢 | — | ci.yml + watchdog.yml verdes |
 | **IA Strategy** (`docs/10_AI_STRATEGY/`) | 🟢 | — | 8 docs integrados na governança (GEMINI.md §16). `07_GOVERNANCA` atualizado. |
@@ -419,6 +413,7 @@ const { data, error } = await queryService
 
 | Rodada | SHA | Data | O que foi feito | build |
 |--------|-----|------|-----------------|:---:|
+| 18 — Remoção dtc_analyze | `9afc200` | 2026-03-18 | EF dtc_analyze removida do repo. Zero consumidores. analisar-dtc canônica. R-012 resolvido. | ✅ |
 | 17 — Limpeza Legado | `2f1c8fa` | 2026-03-18 | 8 docs/AI → _archive. Fallback OpenAI removido. global_rules §10.1 corrigido. dtc_analyze DEPRECATED. | ✅ |
 | 16 — Limpeza Owner | `43bd6b6` | 2026-03-18 | Dependabot 3 alerts fix (jspdf+esbuild). test-pdf deletado. Migration renomeada. | ✅ |
 | 15 — ONDA 7F5 R4/R5 | `3516046` | 2026-03-18 | OBD Center R4/R5: Knowledge insights + KnowledgeInsightsCard. Zero estruturas novas. | ✅ |
@@ -461,7 +456,7 @@ const { data, error } = await queryService
 | D-009 | `docs/10_AI_STRATEGY/` é fonte **obrigatória** de contexto antes de features IA (GEMINI.md §16) | 2026-03-18 | `2c44e1e` |
 | D-010 | **Autoridade documental formalizada**: `docs/AI/` inteira é LEGADO — nenhum agente deve usar como fonte de decisão. `00_START_HERE.md` é LEGADO. Fontes confiáveis: GEMINI.md + STATUS.md + 10_AI_STRATEGY + .agents/ | 2026-03-18 | Rodada 10 |
 | D-011 | **Limpeza documental executada**: 15 banners ⚠️ LEGADO aplicados, 2 docs atualizados (global_rules, SERVICES_AND_DATA_ACCESS), 3 lixos removidos. Hierarquia de 5 camadas efetivada. | 2026-03-18 | Rodada 11 |
-| D-012 | **`analisar-dtc` é a função canônica** para análise DTC. `dtc_analyze` é legado V1 — **DEPRECATED com zero consumidores** desde Rodada 17. Fallback OpenAI removido do web. Mobile nunca usou. | 2026-03-18 | `780b5e6` |
+| D-012 | **`analisar-dtc` é a função canônica** para análise DTC. `dtc_analyze` **REMOVIDA** do repo na Rodada 18. Fallback OpenAI removido R17. Mobile nunca usou. Domínio DTC/IA limpo. | 2026-03-18 | Rodada 18 |
 | D-013 | **`knowledge_rules` é catálogo global** — sem `company_id`. Regras técnicas universais. Se empresa precisar de regras custom, será tabela separada. | 2026-03-18 | `23ad8c3` |
 | D-014 | **`docs/AI/` inteira arquivada em `_archive/`** — Rodada 17. 8 handoffs/snapshots congelados. Não são fonte de decisão. `00_START_HERE.md` refs AI limpas. | 2026-03-18 | Rodada 17 |
 | D-015 | **`global_rules.md` §10.1 corrigido** — fontes canônicas: GEMINI.md, STATUS.md, 10_AI_STRATEGY, global_rules. Referências a `AI_CONTEXT_SNAPSHOT` e `ARCHITECTURE_OVERVIEW` removidas. | 2026-03-18 | Rodada 17 |
@@ -518,32 +513,28 @@ const { data, error } = await queryService
 
 ### Contexto para próxima sessão
 
-**Rodada 17 — Limpeza de Legado Concluída:**
-- ✅ docs/AI/ 8 arquivos arquivados em `_archive/` (D-014)
-- ✅ `00_START_HERE.md` e `global_rules.md` §10.1 corrigidos (D-015)
-- ✅ Fallback OpenAI removido de `dtcAiService.ts` (-55 linhas)
-- ✅ EF `dtc_analyze` DEPRECATED (zero consumidores)
+**Rodada 18 — dtc_analyze removida:**
+- ✅ EF `dtc_analyze` removida do repositório (zero consumidores)
+- ✅ `analisar-dtc` permanece como função canônica
+- ✅ Domínio DTC/IA limpo — sem fallback legado
 - ✅ tsc 0 erros | build exit 0
 
 **Próxima frente (código):**
 ```
-Antigravity, Rodada 17 concluída. Limpeza de legado finalizada.
+Antigravity, Rodada 18 concluída. dtc_analyze removida.
 
-Resolvidos:
-- docs/AI/ arquivado (8 files, D-014)
-- Fallback OpenAI removido do web (-55 linhas)
-- global_rules.md corrigido (D-015)
-- dtc_analyze DEPRECATED (zero consumidores)
+Próxima frente autorizada pelo Owner:
+CRUD admin web knowledge_rules (web-only).
 
-Decisões Owner:
-1. CRUD knowledge_rules admin web
-2. Remoção do deploy de dtc_analyze no Supabase
-3. Nova frente de evolução — qual domínio priorizar?
+Escopo:
+1. Auditoria pré-implementação (GEMINI.md §16)
+2. Tela de listagem, criação, edição e exclusão de knowledge_rules
+3. Usar services existentes (knowledgeEngineService)
+4. Validação completa (tsc, build, fluxo)
 ```
 
 ### Itens Owner (paralelos):
-1. **CRUD knowledge_rules admin** — decisão de escopo
-2. **Remover EF `dtc_analyze` do deploy** — agora zero consumidores (D-012 + Rodada 17)
-3. **Nova frente** — qual domínio priorizar?
+1. **CRUD knowledge_rules admin web-only** — próxima frente autorizada
+2. **Nova frente de evolução** — qual domínio priorizar após CRUD?
 
 ---
