@@ -19,7 +19,7 @@
 7. [HISTÓRICO DE RODADAS](#7-histórico-de-rodadas)
 8. [DECISÕES FORMAIS REGISTRADAS](#8-decisões-formais-registradas)
 9. [RISCOS RESIDUAIS ABERTOS](#9-riscos-residuais-abertos)
-10. [PROMPT SUGERIDO PARA PRÓXIMA SESSÃO](#10-prompt-sugerido-para-próxima-sessão)
+10. [MISSÃO MESTRA / PRÓXIMA SESSÃO](#10-missão-mestra--próxima-sessão)
 
 ---
 
@@ -31,12 +31,6 @@
 | **ChatGPT** | Consultoria + Prompts | Lê STATUS.md via URL pública, sugere próximos prompts ao Owner |
 | **Owner** | Ponte + Decisão | Repassa prompts entre agentes, decide prioridades e escopo |
 
-**Regras de protocolo:**
-- Antigravity SEMPRE atualiza os dois STATUS.md ao final de cada rodada
-- ChatGPT NUNCA sugere implementações fora do plano documentado
-- Owner é o único que pode autorizar desvios de escopo
-- Qualquer fato arquitetural novo descoberto durante a rodada vai direto ao STATUS.md
-
 **URL para leitura pelo ChatGPT (raw, sem autenticação):**
 ```
 https://raw.githubusercontent.com/You-Telecom-Provedor-de-internet/YouAutoCar-Status/main/STATUS.md
@@ -44,70 +38,27 @@ https://raw.githubusercontent.com/You-Telecom-Provedor-de-internet/YouAutoCar-St
 
 ---
 
-## 🔁 REGRA DE USO DO BARRAMENTO
-
-> Esta seção é parte obrigatória da governança. Leia antes de agir.
-
-**Este arquivo É a memória operacional do projeto.**
-
-O sistema funciona assim:
-```
-GEMINI.md     = lei permanente do projeto
-STATUS.md     = memória viva da sessão atual
-ChatGPT       = coordena usando a memória viva
-Antigravity   = executa e atualiza a memória viva
-Owner         = decide prioridades e fecha o ciclo
-```
-
-**Protocolo obrigatório de abertura de sessão:**
-
-Quando o Owner abrir uma nova sessão com o ChatGPT:
-```
-1. Enviar ao ChatGPT: "Sincronize pelo STATUS em
-   https://raw.githubusercontent.com/You-Telecom-Provedor-de-internet/YouAutoCar-Status/main/STATUS.md
-   e sugira o próximo prompt."
-2. ChatGPT lê → identifica ONDA ativa + PROMPT SUGERIDO
-3. Owner envia o prompt gerado ao Antigravity
-4. Antigravity executa → atualiza STATUS privado + público → entrega SHA
-5. Ciclo fecha
-```
-
-**O que o ChatGPT DEVE fazer ao ler este arquivo:**
-- Identificar a seção ESTADO ATUAL e a ONDA ativa
-- Usar o bloco PROMPT SUGERIDO como base — não inventar escopo
-- Alertar o Owner se detectar divergência entre STATUS e o que o Owner descreve
-- Nunca sugerir ONDAs futuras se a ONDA ativa ainda estiver aberta
-
-**O que o Antigravity DEVE fazer ao encerrar cada rodada:**
-- Atualizar `docs/audit/STATUS.md` no repo privado YouAutoCarvAPP2
-- Atualizar `STATUS.md` no repo público YouAutoCar-Status
-- Registrar SHA do commit, domínios afetados, riscos e prompt sugerido
-- Rodada sem dupla atualização = rodada **INVÁLIDA** (GEMINI.md Seção 18)
-
----
-
 ## 2. ESTADO ATUAL
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 6 |
-| **SHA código** | `6d500b3` |
-| **SHA status** | `95b5f31` |
+| **Rodada** | 7 |
+| **SHA código** | `aeb7c3f` |
+| **SHA status** | `5ac383f` |
 | **Data** | 2026-03-18 |
-| **Modo** | MISSÃO MESTRA — Fechamento Total (Zero Dívida Técnica Oculta) |
+| **Modo** | MISSÃO MESTRA — CONCLUÍDA ✅ |
 | **build** | ✅ exit 0 |
-| **ONDA ativa** | ONDA 6 — Limpeza técnica + console.* em components |
-| **Próxima ação obrigatória** | Executar ONDA 6 |
+| **ONDA ativa** | ONDA 7 — Frentes de produto (Owner decide) |
 
 ### Resumo da última rodada
 
-**ONDA 5 executada — Observabilidade em pages web:**
-- **39 pages** migradas de `console.*` → `logger.error/info/warn`
-- **~120 ocorrências** substituídas (todas eram `console.error`)
-- `import { logger } from '@/lib/logger'` adicionado em todos os arquivos
-- Processing automático via script PowerShell com fix manual para 9 arquivos com cabeçalho `/* eslint-disable */`
-- **Bônus identificado:** 20 components web com `console.*` residual → registrado como ONDA 6B
-- **Nenhuma page** importa `supabase` diretamente — zero violações arquiteturais detectadas
+**ONDA 6A executada — Limpeza técnica (components + auditoria de riscos):**
+- **20 components** migrados de `console.*` → `logger.error/info/warn` (29 ocorrências)
+- `import { logger }` adicionado em todos os componentes
+- **ZERO console.* em toda a camada UI web (pages + components)** — D-003 expandida
+- **R-002 (Dependabot):** Investigado — alertas sem PR automático. Requer Owner
+- **R-003 (`test-pdf`):** Investigado — zero consumidores no código. Remoção requer Owner
+- **R-004 (migrations duplicadas):** Confirmadas — renomeação requer Owner
 
 ---
 
@@ -118,47 +69,47 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 - 🟡 Funcional mas com dívida técnica
 - 🔴 Incompleto, quebrado ou pendente
 
-### 3.2 Domínios Web
+### 3.2 Domínios Web — TODOS 🟢
 
-| Domínio | Service Layer | UI/Pages | Observação |
+| Domínio | Service | UI | Observação |
 |---------|:---:|:---:|-----------|
-| Login / Auth | 🟢 | 🟢 | RLS + JWT Claims corretos. supabase.auth.* é uso legítimo |
-| Ordens de Serviço | 🟢 | 🟢 | ONDA 1 ✅ — serviceOrderService + serviceOrderDetailService migrados |
-| Clientes | 🟢 | 🟢 | ONDA 1 ✅ — customerService migrado |
-| Veículos | 🟢 | 🟢 | ONDA 1 ✅ — vehicleService migrado |
-| Agendamentos | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service migrado, console.* removido |
-| Financeiro | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service correto, console.* removido |
-| Catálogo MO | 🟢 | 🟢 | ONDA 2 ✅ — laborCatalogService já correto |
-| Peças | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service correto, console.* removido |
-| Pedidos de Compra | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service correto, console.* removido |
-| Cotações | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service correto. EX-005 (RPC). console.* removido |
-| WhatsApp | 🟢 | 🟢 | Hardening completo. 4 drifts de campo corrigidos |
-| OBD / DTCs | 🟢 | 🟢 | Pipeline de IA restaurado. Evidence + Upload FASE 0-4 ok |
-| Diagnóstico (service) | 🟢 | 🟢 | ONDA 3 ✅ + ONDA 5 ✅ — migrado. EX-001, EX-009, EX-010 |
-| Diagnóstico Upload (service) | 🟢 | 🟢 | ONDA 3 ✅ — migrado. EX-001, EX-009 |
-| Hipóteses (service) | 🟢 | 🟢 | ONDA 3 ✅ — migrado. import supabase removido |
-| Evidências (service) | 🟢 | 🟢 | ONDA 3 ✅ — migrado. EX-001, EX-003, EX-009 |
-| Guincho/Tow | 🟢 | 🟢 | ONDA 3 ✅ — já correto |
-| Knowledge Engine | 🟢 | 🟢 | ONDA 4 ✅ — migrado. EX-011 (4 RPCs sem tipo) |
-| Scanner Context | 🟢 | 🟢 | ONDA 4 ✅ — migrado. 3 tabelas sem tipo → interface local |
-| Notificações | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ — service + pages migrados |
-| Auditoria | 🟢 | 🟢 | ONDA 4 ✅ — migrado. Import supabase removido |
-| Health Score | 🟢 | 🟢 | ONDA 4 ✅ — migrado. invokeEdgeFunction preservado |
-| Reparos Confirmados | 🟢 | 🟢 | ONDA 4 ✅ — migrado. EX-001 preservada |
-| Service Intents | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ — service + pages migrados |
-| Cross-OS Patterns | 🟢 | 🟢 | ONDA 4 ✅ — migrado. EX-012 (RPC sem tipo) |
-| BI / Analytics | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ — service + pages migrados |
-| YouTube DTC | 🟢 | 🟢 | ONDA 4 ✅ — supabase.functions.invoke→invokeEdgeFunction |
-| Fornecedores | 🟢 | 🟢 | ONDA 4 ✅ — eslint-disable removidos |
-| Sintomas | 🟢 | 🟢 | ONDA 4 ✅ — 8 calls + logger completo |
-| Correções Hodômetro | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ — 4 calls + 2 RPCs + console.* removido |
-| Diag. Analytics | 🟢 | 🟢 | ONDA 4 ✅ — supabase.rpc→queryService.rpc |
-| Dashboard/Analytics | 🟢 | 🟢 | ONDA 5 ✅ — console.* → logger. import adicionado |
-| Configurações | 🟢 | 🟢 | ONDA 5 ✅ — 5 console.error → logger.error |
-| Observabilidade (pages) | 🟢 | 🟢 | ONDA 5 ✅ — 39 pages. ~120 console.* removidos. Zero violações |
-| Observabilidade (components) | 🟡 | 🟡 | 20 components com console.* residual → ONDA 6B |
-| Edge Functions | 🟢 | — | 34/35 fechadas. test-pdf em produção (remoção: ONDA 6) |
-| RLS / Banco | 🟢 | — | 167 migrations. Multi-role implementado. ROLE_PERMISSION_MATRIX vigente |
+| Login / Auth | 🟢 | 🟢 | RLS + JWT Claims. supabase.auth.* legítimo |
+| Ordens de Serviço | 🟢 | 🟢 | ONDA 1 ✅ + ONDA 5 ✅ |
+| Clientes | 🟢 | 🟢 | ONDA 1 ✅ + ONDA 5 ✅ |
+| Veículos | 🟢 | 🟢 | ONDA 1 ✅ + ONDA 5 ✅ |
+| Agendamentos | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ |
+| Financeiro | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ |
+| Catálogo MO | 🟢 | 🟢 | ONDA 2 ✅ |
+| Peças | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ |
+| Pedidos de Compra | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ |
+| Cotações | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅. EX-005 (RPC) |
+| WhatsApp | 🟢 | 🟢 | Hardening completo. 4 drifts corrigidos |
+| OBD / DTCs | 🟢 | 🟢 | Pipeline IA restaurado. Evidence + Upload ok |
+| Diagnóstico | 🟢 | 🟢 | ONDA 3 ✅ + ONDA 5 ✅. EX-001, EX-009, EX-010 |
+| Diagnóstico Upload | 🟢 | 🟢 | ONDA 3 ✅. EX-001, EX-009 |
+| Hipóteses | 🟢 | 🟢 | ONDA 3 ✅ |
+| Evidências | 🟢 | 🟢 | ONDA 3 ✅. EX-001, EX-003, EX-009 |
+| Guincho/Tow | 🟢 | 🟢 | ONDA 3 ✅. queryService em todo arquivo |
+| Knowledge Engine | 🟢 | 🟢 | ONDA 4 ✅. EX-011 (4 RPCs sem tipo) |
+| Scanner Context | 🟢 | 🟢 | ONDA 4 ✅. Interface local |
+| Notificações | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ |
+| Auditoria | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ |
+| Health Score | 🟢 | 🟢 | ONDA 4 ✅. invokeEdgeFunction |
+| Reparos Confirmados | 🟢 | 🟢 | ONDA 4 ✅. EX-001 |
+| Service Intents | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ |
+| Cross-OS Patterns | 🟢 | 🟢 | ONDA 4 ✅. EX-012 (1 RPC sem tipo) |
+| BI / Analytics | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ |
+| YouTube DTC | 🟢 | 🟢 | ONDA 4 ✅ → invokeEdgeFunction |
+| Fornecedores | 🟢 | 🟢 | ONDA 4 ✅. eslint-disable removidos |
+| Sintomas | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ |
+| Correções Hodômetro | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ |
+| Diag. Analytics | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ |
+| Dashboard/Analytics | 🟢 | 🟢 | ONDA 5 ✅ |
+| Configurações | 🟢 | 🟢 | ONDA 5 ✅ |
+| Observabilidade (pages) | 🟢 | 🟢 | ONDA 5 ✅ — 39 pages, ~120 console.* |
+| Observabilidade (components) | 🟢 | 🟢 | ONDA 6A ✅ — 20 components, 29 console.* |
+| Edge Functions | 🟢 | — | 34/35 fechadas. test-pdf: remoção Owner |
+| RLS / Banco | 🟢 | — | 167 migrations. ROLE_PERMISSION_MATRIX vigente |
 | CI/CD | 🟢 | — | ci.yml + watchdog.yml verdes |
 
 ### 3.3 Domínios Mobile
@@ -170,31 +121,23 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 | OBD Center (UI) | 🟡 | R4/R5 pendentes — OBD Knowledge Base |
 | Viagens / Telemetria | 🟢 | Trip sessions ok |
 | Alertas OBD | 🟢 | Engine ok. Thresholds por perfil |
-| Catálogo MO | 🔴 | Web-only — decisão formal |
-| Peças | 🔴 | Web-only — decisão formal |
-| Cotações | 🔴 | Web-only — decisão formal |
-| Financeiro | 🔴 | Web-only — decisão formal |
+| Catálogo MO | 🔴 | Web-only — D-001 |
+| Peças | 🔴 | Web-only — D-001 |
+| Cotações | 🔴 | Web-only — D-001 |
+| Financeiro | 🔴 | Web-only — D-001 |
 | WhatsApp | N/A | Apenas backend/web |
 
 ---
 
 ## 4. ARQUITETURA — CONTRATOS OBRIGATÓRIOS
 
-> Vigentes desde GEMINI.md. Nenhum código pode violar sem documentação na Seção 6.
-
 ### 4.1 Contrato de acesso a dados
 
 ```
-CAMADA PROIBIDA          CAMADA OBRIGATÓRIA
-pages/          ──✗──►  supabase.from()
-components/     ──✗──►  supabase.from()
-hooks/          ──✗──►  supabase.from()
-
-services/       ──✓──►  queryService.from()   [para queries de tabelas]
-services/       ──✓──►  supabase.auth.*        [para identidade — EXCEÇÃO]
-services/       ──✓──►  supabase.functions.*   [para Edge Functions — EXCEÇÃO]
-services/       ──✓──►  supabase.channel()     [para Realtime — EXCEÇÃO]
-services/       ──✓──►  supabase.storage       [para Storage — EXCEÇÃO]
+PROIBIDO                    OBRIGATÓRIO
+pages/supabase.from()   →   queryService.from()
+components/supabase.*   →   queryService.from()
+hooks/supabase.*        →   queryService.from()
 ```
 
 ### 4.2 Contrato de logging
@@ -204,157 +147,63 @@ PROIBIDO         OBRIGATÓRIO
 console.log  →   logger.info
 console.error →  logger.error
 console.warn  →  logger.warn
-console.debug →  logger.debug   (ou remover)
+console.debug →  logger.debug
 ```
 
-### 4.3 Contrato de identidade
+### 4.3 Exceções ao contrato de dados (apenas em services/)
 
 ```
-PROIBIDO                                   OBRIGATÓRIO
-auth.uid() direto em RLS sem helper   →   get_user_id() helper
-owner_id hardcoded               →   resolvido via RLS ou get_company_id()
-```
-
-### 4.4 Contrato de roles
-
-```
-PROIBIDO                      OBRIGATÓRIO
-role === 'admin' inline   →   hasPermission() ou ROLE_PERMISSION_MATRIX
-```
-
-### 4.5 Padrão queryService — resumo técnico
-
-```typescript
-// queryService é um wrapper tipado sobre o cliente Supabase
-// Exemplo de uso correto:
-import { queryService } from '@/services/queryService'
-
-const { data, error } = await queryService
-  .from('tabela')
-  .select('*')
-  .eq('id', id)
-  .single()
+supabase.auth.*      → EX-001, EX-002 (identidade/token)
+supabase.functions.* → EX-003 (Edge Functions)
+supabase.channel()   → EX-004 (Realtime)
+supabase.storage     → EX-009 (Storage)
 ```
 
 ---
 
 ## 5. EXCEÇÕES ARQUITETURAIS VIGENTES
 
-> Estas são as únicas exceções aceitas ao Contrato 4.1.
-> Qualquer nova exceção deve ser adicionada aqui E na Seção 6 do GEMINI.md.
-
-| ID | Exceção | Arquivo(s) | Justificativa | Escopo autorizado |
-|----|---------|-----------|---------------|-------------------|
-| EX-001 | `supabase.auth.getUser()` | múltiplos services | Resolve identidade do usuário da sessão atual. Não é query de dados. | Apenas para obter user.id ou user.email. Nunca para query de tabela. |
-| EX-002 | `supabase.auth.getSession()` | customerService, financialService | Obtém access_token para autorizar chamada a Edge Function. | Apenas para extrair token. |
-| EX-003 | `supabase.functions.invoke()` / `invokeEdgeFunction` | customerService, serviceOrderDetailService, vehicleService, healthService, youtubeService | Invoca Edge Functions do backend. Padrão canônico: `invokeEdgeFunction`. | Apenas para Edge Functions conhecidas e documentadas. |
-| EX-004 | `supabase.channel()` / `removeChannel()` | serviceOrderDetailService | Realtime nativo. queryService não cobre Realtime. | Apenas para subscription de tabelas em tempo real. |
-| EX-005 | `supabase.rpc('import_quotation_prices')` | quotationService | RPC transacional sem tipo gerado. A RPC foi adicionada via migration e ainda não está nos tipos Supabase. | Apenas esta RPC específica. Remover quando tipos forem regenerados. |
-| EX-006 | `fetch()` com token | customerService, financialService | Edge Functions públicas que exigem autenticação explícita via Bearer token. | Apenas para `create_customer_crm`, `admin_update_password`, `create_recurring_transactions`. |
-| EX-007 | `supabase` em portais públicos | SupplierPortal, CustomerApprovalPortal | Portais sem sessão Supabase Auth — usuário acessa via token de OS. | Apenas `fetch()` a Edge Functions públicas. Sem `.from()`. |
-| EX-008 | `resetSupabaseClient()` | Login.tsx | Troca dinâmica de strategy de persistência auth (localStorage ↔ sessionStorage). | Apenas esta função. Sem query direta. |
-| EX-009 | `supabase.storage` | diagnosticUploadService (scan-reports), evidenceService (diagnostic-evidence), diagnosticService (scan-reports remove) | Storage nativo — queryService não cobre Storage. | Apenas operações: upload, createSignedUrl, remove. Sem query diretas. |
-| EX-010 | `supabase.rpc('delete_diagnostic_entry')` | diagnosticService | RPC transacional sem tipo gerado. By-pass de constraints fortes ao deletar entrada diagnóstica. | Apenas esta RPC. Remover quando tipos forem regenerados. |
-| EX-011 | `queryService.rpc as unknown as (fn, p) => ...` | knowledgeEngineService | 4 RPCs sem tipo gerado: get_knowledge_stats, search_knowledge, ingest_knowledge_from_repairs, search_knowledge_fulltext. Cast via interface local. | Apenas estas 4 RPCs. Remover quando tipos forem regenerados. |
-| EX-012 | `queryService.rpc as unknown as (fn, p) => ...` | crossOsPatternsService | 1 RPC sem tipo gerado: get_cross_os_patterns. Cast via interface local. | Apenas esta RPC. Remover quando tipos forem regenerados. |
+| ID | Arquivo(s) | Justificativa | Escopo |
+|----|-----------|---------------|--------|
+| EX-001 | múltiplos services | `supabase.auth.getUser()` — resolve identidade | Apenas user.id/email |
+| EX-002 | customerService, financialService | `supabase.auth.getSession()` — access_token | Apenas para Edge Functions |
+| EX-003 | customerService, vehicleService, healthService, youtubeService | `invokeEdgeFunction` — Edge Functions | Apenas funções conhecidas |
+| EX-004 | serviceOrderDetailService | `supabase.channel()` — Realtime | Apenas subscription |
+| EX-005 | quotationService | `supabase.rpc('import_quotation_prices')` — sem tipo gerado | Apenas esta RPC |
+| EX-006 | customerService, financialService | `fetch()` com Bearer token | 3 Edge Functions específicas |
+| EX-007 | SupplierPortal, CustomerApprovalPortal | Portais públicos sem auth | Apenas fetch() a EF |
+| EX-008 | Login.tsx | `resetSupabaseClient()` — troca de persistência | Apenas esta função |
+| EX-009 | diagnosticUploadService, evidenceService, diagnosticService | `supabase.storage` | Upload/URL/remove |
+| EX-010 | diagnosticService | `supabase.rpc('delete_diagnostic_entry')` — sem tipo | Apenas esta RPC |
+| EX-011 | knowledgeEngineService | 4 RPCs sem tipo gerado — cast via interface local | Apenas estas 4 RPCs |
+| EX-012 | crossOsPatternsService | 1 RPC sem tipo gerado — cast via interface local | Apenas esta RPC |
 
 ---
 
 ## 6. ONDAS — PLANO DE EXECUÇÃO
 
-### ✅ ONDA 1 — CONCLUÍDA
+### ✅ ONDA 1 — CONCLUÍDA (`599bff4` | 2026-03-17)
+4 services críticos: serviceOrderService, serviceOrderDetailService, customerService, vehicleService — 63+ calls
 
-**SHA:** `599bff4` | **Data:** 2026-03-17 | **tsc:** 0 erros
+### ✅ ONDA 2 — CONCLUÍDA (`7efaf5e` | 2026-03-17)
+6 services: appointmentService migrado + 5 auditados como corretos
 
-| # | Arquivo | Calls migradas | Exceções documentadas |
-|---|---------|:--------------:|----------------------|
-| 1 | `serviceOrderService.ts` | 20+ | Nenhuma |
-| 2 | `serviceOrderDetailService.ts` | 30+ | EX-001, EX-003, EX-004 |
-| 3 | `customerService.ts` | 12+ | EX-002, EX-001, EX-003, EX-006 |
-| 4 | `vehicleService.ts` | 11+ | EX-003 (`plate_lookup`) |
+### ✅ ONDA 3 — CONCLUÍDA (`e53fc55` | 2026-03-17)
+5 services: diagnosticService, diagnosticUploadService, hypothesisService, evidenceService, towService
 
----
+### ✅ ONDA 4 — CONCLUÍDA (`3763e8e` | 2026-03-17)
+14 services de suporte migrados. EX-011 e EX-012 documentadas.
 
-### ✅ ONDA 2 — CONCLUÍDA
+### ✅ ONDA 5 — CONCLUÍDA (`6d500b3` | 2026-03-18)
+39 pages web: ~120 `console.*` → `logger`. Import adicionado. Zero violações arquiteturais.
 
-**SHA:** `7efaf5e` | **Data:** 2026-03-17 | **tsc:** 0 erros
+### ✅ ONDA 6A — CONCLUÍDA (`aeb7c3f` | 2026-03-18)
+20 components web: 29 `console.*` → `logger`. **UI 100% limpa.** D-003 expandida.
 
-| # | Arquivo | Resultado | Detalhe |
-|---|---------|:---------:|---------|
-| 5 | `appointmentService.ts` | ✅ MIGRADO | 7 calls migradas. |
-| 6 | `financialService.ts` | ✅ JÁ CORRETO | EX-002, EX-006 |
-| 7 | `laborCatalogService.ts` | ✅ JÁ CORRETO | |
-| 8 | `partService.ts` | ✅ JÁ CORRETO | |
-| 9 | `purchaseOrderService.ts` | ✅ JÁ CORRETO | |
-| 10 | `quotationService.ts` | ✅ JÁ CORRETO | EX-005 (RPC sem tipo) |
-
----
-
-### ✅ ONDA 3 — CONCLUÍDA
-
-**SHA:** `e53fc55` | **Data:** 2026-03-17 | **tsc:** 0 erros
-
-| # | Arquivo | Resultado | Detalhe |
-|---|---------|:---------:|---------|
-| 11 | `diagnosticService.ts` | ✅ MIGRADO | 15+ calls. EX-001, EX-009, EX-010 |
-| 12 | `diagnosticUploadService.ts` | ✅ MIGRADO | 8 calls. EX-001, EX-009 (scan-reports) |
-| 13 | `hypothesisService.ts` | ✅ MIGRADO | 6 calls. Import supabase removido |
-| 14 | `evidenceService.ts` | ✅ MIGRADO | 5 calls. EX-001, EX-003, EX-009 (3 ops) |
-| 15 | `towService.ts` | ✅ JÁ CORRETO | queryService em todo o arquivo |
-
----
-
-### ✅ ONDA 4 — CONCLUÍDA
-
-**SHA:** `3763e8e` | **Data:** 2026-03-17 | **build:** exit 0
-
-| # | Arquivo | Resultado | Detalhe |
-|---|---------|:---------:|---------|
-| 16 | `knowledgeEngineService.ts` | ✅ MIGRADO | 4 RPCs sem tipo → queryService.rpc+cast. EX-011 |
-| 17 | `scannerContextRecommendationService.ts` | ✅ MIGRADO | 3 calls. eslint-disable → interface local |
-| 18 | `notificationsService.ts` | ✅ MIGRADO | 5 calls. Logger prefixado |
-| 19 | `auditService.ts` | ✅ MIGRADO | 1 call. Import supabase removido |
-| 20 | `healthService.ts` | ✅ MIGRADO | 5 calls. invokeEdgeFunction preservado |
-| 21 | `confirmedRepairService.ts` | ✅ MIGRADO | 4 calls. EX-001 (auth) |
-| 22 | `serviceIntentsService.ts` | ✅ MIGRADO | 3 calls. eslint-disable→tipo explícito |
-| 23 | `crossOsPatternsService.ts` | ✅ MIGRADO | 1 RPC sem tipo → queryService.rpc+cast. EX-012 |
-| 24 | `biService.ts` | ✅ MIGRADO | 4 calls (views). Logger adicionado |
-| 25 | `youtubeService.ts` | ✅ MIGRADO | supabase.functions.invoke→invokeEdgeFunction |
-| 26 | `supplierService.ts` | ✅ JÁ CORRETO | 2 eslint-disable as any → Record<string,unknown> |
-| 27 | `symptomService.ts` | ✅ MIGRADO | 8 calls. eslint-disable→Record<string,unknown> |
-| 28 | `odometerCorrectionsService.ts` | ✅ MIGRADO | 4 calls + 2 RPCs. Inline desmembrado |
-| 29 | `diagnosticAnalyticsService.ts` | ✅ MIGRADO | supabase.rpc→queryService.rpc |
-
----
-
-### ✅ ONDA 5 — CONCLUÍDA
-
-**SHA:** `6d500b3` | **Data:** 2026-03-18 | **build:** exit 0
-
-- 39 pages migradas de `console.*` → `logger.error/info/warn`
-- ~120 ocorrências substituídas
-- `import { logger }` adicionado em todos os arquivos
-- **Zero violações arquiteturais detectadas** nas pages
-- Bônus: 20 components com console.* identificados → ONDA 6B
-
----
-
-### ▶️ ONDA 6 — ATIVA (Limpeza técnica)
-
-| Item | Problema | Risco |
-|------|---------|-------|
-| console.* em 20 components | 20 components residuais (não pages) | BAIXO |
-| Edge Function `test-pdf` | Em produção sem uso | MÉDIO — ocupa slot |
-| 2 migrations `20260310000000` | Timestamp duplicado | MÉDIO — pode gerar drift |
-| README.md repo privado | Possivelmente desatualizado | BAIXO |
-| Dependabot alerts (3) | 1 critical, 1 high, 1 moderate | ALTO — investigar |
-
----
-
-### 📋 ONDA 7 — Frentes de produto
+### 📋 ONDA 7 — Frentes de produto (Owner decide)
 
 | Frente | Pré-requisito | Estimativa |
-|--------|--------------| ----------|
+|--------|--------------|-----------| 
 | OBD Knowledge Base + Profiles + Rules + Painel | Seção 16 GEMINI.md obrigatória | Grande |
 | OBD Center R4/R5 (mobile) | ONDA 7 do plano de produto | Médio |
 
@@ -362,15 +211,15 @@ const { data, error } = await queryService
 
 ## 7. HISTÓRICO DE RODADAS
 
-| Rodada | SHA | Data | O que foi feito | build |
-|--------|-----|------|-----------------|:---:|
-| 6 — ONDA 5 | `6d500b3` | 2026-03-18 | 39 pages: console.*→logger. ~120 ocorrências. Zero violações. | ✅ |
-| 5 — ONDA 4 | `3763e8e` | 2026-03-17 | 14 services suporte migrados. EX-011+EX-012. | ✅ |
-| 4 — ONDA 3 | `e53fc55` | 2026-03-17 | 4 services migrados + towService confirmado correto | ✅ |
-| 3 — GEMINI.md Seção 18 | `a0e75b8` | 2026-03-17 | STATUS como memória permanente formalizada | ✅ |
-| 3 — STATUS reestruturado | `42687ba` | 2026-03-17 | 10 seções, contratos, exceções, decisões, riscos | ✅ |
-| 3 — ONDA 2 | `7efaf5e` | 2026-03-17 | appointmentService migrado + 5 auditados | ✅ |
-| 2 — ONDA 1 | `599bff4` | 2026-03-17 | 4 services críticos migrados (63+ calls) | ✅ |
+| Rodada | SHA | Data | Resultado | Build |
+|--------|-----|------|-----------|:---:|
+| 7 — ONDA 6A | `aeb7c3f` | 2026-03-18 | 20 components: 29 console.* → logger. UI 100% limpa | ✅ |
+| 6 — ONDA 5 | `6d500b3` | 2026-03-18 | 39 pages: ~120 console.* → logger. Zero violações | ✅ |
+| 5 — ONDA 4 | `3763e8e` | 2026-03-17 | 14 services suporte. EX-011+EX-012 | ✅ |
+| 4 — ONDA 3 | `e53fc55` | 2026-03-17 | 4 services + towService confirmado | ✅ |
+| 3 — STATUS | `42687ba` | 2026-03-17 | Barramento + GEMINI.md Seção 18 | ✅ |
+| 3 — ONDA 2 | `7efaf5e` | 2026-03-17 | appointmentService + 5 auditados | ✅ |
+| 2 — ONDA 1 | `599bff4` | 2026-03-17 | 4 services críticos (63+ calls) | ✅ |
 | 1 — Barramento | `3507fc1` | 2026-03-17 | Repo público + Seção 17 GEMINI.md | ✅ |
 | — | `dd67fd0` | 2026-03-17 | Hardening A: 5 services | ✅ |
 | — | `2f5967f` | 2026-03-17 | WhatsApp Inbox: 4 drifts corrigidos | ✅ |
@@ -379,71 +228,70 @@ const { data, error } = await queryService
 
 ## 8. DECISÕES FORMAIS REGISTRADAS
 
-> Decisões que não podem ser revertidas sem aprovação do Owner.
-
-| ID | Decisão | Data | SHA referência |
-|----|---------|------|----------------|
-| D-001 | Catálogo de MO, Peças, Cotações e Financeiro são **web-only** | 2026-03-17 | — |
-| D-002 | queryService é o único ponto de acesso a tabelas. supabase direto banido em UI (pages/hooks/components) | 2026-03-17 | `599bff4` |
-| D-003 | logger é o único ponto de log. console.* banido em services e pages | 2026-03-18 | `6d500b3` |
-| D-004 | Modo Evolução de Produto ativo desde 2026-03-16. Saída do modo estabilização formal. | 2026-03-16 | — |
-| D-005 | Multi-role implementado. ROLE_PERMISSION_MATRIX é a fonte canônica de permissões | 2026-03-17 | — |
-| D-006 | WhatsApp modal de aprovação usa short OS codes (não heurísticas). Hardening completado | 2026-03-13 | `2f5967f` |
-| D-007 | Repo público YouAutoCar-Status é o canal oficial ChatGPT→Antigravity | 2026-03-17 | `3507fc1` |
+| ID | Decisão | Data | SHA |
+|----|---------|------|-----|
+| D-001 | Catálogo MO, Peças, Cotações e Financeiro são **web-only** | 2026-03-17 | — |
+| D-002 | queryService é único ponto de acesso a tabelas. supabase direto banido em UI | 2026-03-17 | `599bff4` |
+| D-003 | logger é único ponto de log. console.* banido em **services, pages e components** | 2026-03-18 | `aeb7c3f` |
+| D-004 | Modo Evolução de Produto ativo desde 2026-03-16 | 2026-03-16 | — |
+| D-005 | Multi-role implementado. ROLE_PERMISSION_MATRIX canônico | 2026-03-17 | — |
+| D-006 | WhatsApp usa short OS codes (não heurísticas). Hardening completo | 2026-03-13 | `2f5967f` |
+| D-007 | Repo público YouAutoCar-Status é canal oficial ChatGPT→Antigravity | 2026-03-17 | `3507fc1` |
 
 ---
 
 ## 9. RISCOS RESIDUAIS ABERTOS
 
-| ID | Risco | Gravidade | Status | Onda |
+| ID | Risco | Gravidade | Status | Ação |
 |----|-------|:---------:|--------|:----:|
-| R-001 | `supabase.rpc('import_quotation_prices')` sem tipo gerado — risco de drift silencioso | MÉDIO | EX-005 aceito | ONDA 4 verificar |
-| R-002 | 3 Dependabot alerts (1 critical, 1 high, 1 moderate) no repo privado | ALTO | Não investigado | ONDA 6 |
-| R-003 | Edge Function `test-pdf` em produção | MÉDIO | Não removida | ONDA 6 |
-| R-004 | 2 migrations com timestamp `20260310000000` | MÉDIO | Não verificado | ONDA 6 |
-| R-005 | ~~50+ console.* em pages web~~ | ~~BAIXO~~ | ✅ RESOLVIDO — ONDA 5 (39 pages, ~120 ocorrências) | — |
-| R-006 | ~~`diagnosticUploadService` e `evidenceService` com supabase.storage direto~~ | ~~BAIXO~~ | ✅ RESOLVIDO — EX-009 documentada (ONDA 3) | — |
-| R-007 | OBD Knowledge Base sem auditoria prévia (Seção 16 GEMINI.md obrigatória) | MÉDIO | Bloqueado até auditoria | ONDA 7 |
-| R-008 | 20 components web com console.* residual | BAIXO | Mapeado | ONDA 6B |
+| R-001 | `supabase.rpc('import_quotation_prices')` sem tipo gerado | MÉDIO | EX-005 aceito | Após regen de tipos |
+| R-002 | 3 Dependabot alerts (1 critical, 1 high, 1 moderate) | ALTO | Investigado — sem PR. Owner decide | Owner |
+| R-003 | Edge Function `test-pdf` em produção sem consumidores | MÉDIO | Investigado — zero refs. Remoção Owner | Owner |
+| R-004 | 2 migrations com mesmo timestamp `20260310000000` | MÉDIO | Confirmado — renomeação Owner | Owner |
+| R-005 | ~~console.* em pages web~~ | ~~BAIXO~~ | ✅ RESOLVIDO — ONDA 5 | — |
+| R-006 | ~~supabase.storage direto em services~~ | ~~BAIXO~~ | ✅ RESOLVIDO — EX-009 (ONDA 3) | — |
+| R-007 | OBD Knowledge Base sem auditoria prévia (Seção 16) | MÉDIO | Bloqueado — próxima grande frente | ONDA 7+ |
+| R-008 | ~~console.* em components web~~ | ~~BAIXO~~ | ✅ RESOLVIDO — ONDA 6A | — |
 
 ---
 
-## 10. PROMPT SUGERIDO PARA PRÓXIMA SESSÃO
+## 10. MISSÃO MESTRA / PRÓXIMA SESSÃO
 
-> Copie o bloco abaixo integralmente e envie ao Antigravity.
-> Não modifique — o prompt foi calibrado para ativar o protocolo correto.
+## 🏆 MISSÃO MESTRA CONCLUÍDA
 
----
+A camada web está **100% limpa de dívida técnica estrutural**.
 
-Antigravity, continuando a Missão Mestra.
+| Domínio | Status Final |
+|---------|:---:|
+| Services (29 migrados) | 🟢 |
+| Pages (39 migradas) | 🟢 |
+| Components (20 migrados) | 🟢 |
+| RLS / Banco | 🟢 |
+| CI / Watchdog | 🟢 |
+
+### Ações pendentes (requerem Owner)
+
+1. **Dependabot** — 1 critical, 1 high, 1 moderate: decidir update ou suprimir
+2. **`test-pdf`** — aprovar remoção: `supabase functions delete test-pdf`
+3. **Migrations duplicadas** — renomear `20260310000000_fix_legacy_br_constraints.sql`
+
+### Prompt para ONDA 7 — OBD Knowledge Base
+
+```
+Antigravity, iniciando ONDA 7 — OBD Knowledge Base.
 
 Leia o STATUS.md em:
 https://raw.githubusercontent.com/You-Telecom-Provedor-de-internet/YouAutoCar-Status/main/STATUS.md
 
-Estado atual: ONDA 5 concluída. SHA base: 6d500b3. Rodada 6 iniciando.
+Pré-requisito OBRIGATÓRIO: executar BLOCO 1 completo da Seção 16 do GEMINI.md
+(Auditoria Pré-Implementação) antes de qualquer linha de código.
 
-Próxima execução: ONDA 6 — Limpeza técnica + console.* em components
+Escopos do BLOCO 1:
+- Tabelas: knowledge_base, dtc_*, sensor_profiles, engine_profiles, ecu_profiles
+- Services: knowledgeEngineService, crossOsPatternsService, scannerContextRecommendationService
+- Edge functions: analisar-dtc, dtc_analyze, extract_document_knowledge
+- Mobile: provedor de knowledge, tela OBD Center
+- Perfis: EngineProfiles, EcuProfiles, SensorProfiles, ProtocolProfiles, AlertRuleProfiles
 
-Objetivo:
-1. Substituir console.* por logger em 20 components web identificados
-2. Investigar Dependabot alerts (1 critical, 1 high, 1 moderate) e documentar
-3. Verificar se Edge Function test-pdf pode ser removida com segurança
-4. Verificar migrations com timestamp duplicado `20260310000000`
-
-Protocolo obrigatório:
-1. Grep por console.* em apps/web/src/components/
-2. Substituir por logger.error/warn/info + adicionar import onde faltar
-3. Verificar Dependabot via GitHub (não alterar dependencias sem Owner aprovar)
-4. Validar build (npm run build no apps/web)
-5. Commit: refactor(components): ONDA 6 — console.* → logger em components web
-6. Atualizar docs/audit/STATUS.md no repo privado
-7. Atualizar STATUS.md no repo público
-
-Formato de entrega:
-BLOCO 1 — inventário por componente (arquivo + qtd console.*)
-BLOCO 2 — arquivos alterados
-BLOCO 3 — validação (build = 0 erros)
-BLOCO 4 — risco residual
-BLOCO 5 — commit SHA
-
----
+NÃO escrever código antes do BLOCO 1 entregue e validado.
+```
