@@ -90,32 +90,24 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 5 |
-| **SHA código** | `3763e8e` |
-| **SHA status** | `837e436` |
-| **Data** | 2026-03-17 |
+| **Rodada** | 6 |
+| **SHA código** | `6d500b3` |
+| **SHA status** | `95b5f31` |
+| **Data** | 2026-03-18 |
 | **Modo** | MISSÃO MESTRA — Fechamento Total (Zero Dívida Técnica Oculta) |
 | **build** | ✅ exit 0 |
-| **ONDA ativa** | ONDA 5 (observabilidade — console.* em pages web) |
-| **Próxima ação obrigatória** | Executar ONDA 5 |
+| **ONDA ativa** | ONDA 6 — Limpeza técnica + console.* em components |
+| **Próxima ação obrigatória** | Executar ONDA 6 |
 
 ### Resumo da última rodada
 
-**ONDA 4 executada — 14 services de suporte:**
-- `auditService.ts`: **MIGRADO** — 1 call. Import supabase removido
-- `notificationsService.ts`: **MIGRADO** — 5 calls. Import supabase removido. Logger adicionado
-- `healthService.ts`: **MIGRADO** — 5 calls. Import supabase removido. invokeEdgeFunction preservado
-- `confirmedRepairService.ts`: **MIGRADO** — 4 calls. EX-001 (auth.getUser). Logger prefixado
-- `serviceIntentsService.ts`: **MIGRADO** — 3 calls. eslint-disable as any eliminados com tipo explícito
-- `biService.ts`: **MIGRADO** — 4 calls (views). Logger adicionado. Import supabase removido
-- `symptomService.ts`: **MIGRADO** — 8 calls. eslint-disable as any→Record<string,unknown>. Logger completo
-- `scannerContextRecommendationService.ts`: **MIGRADO** — 3 calls. eslint-disable as any→interface local explícita
-- `odometerCorrectionsService.ts`: **MIGRADO** — 4 calls + 2 RPCs→queryService.rpc(). Inline ternário desmembrado
-- `knowledgeEngineService.ts`: **MIGRADO** — supabase.rpc as any→queryService.rpc+cast. **EX-011** (4 RPCs sem tipo)
-- `crossOsPatternsService.ts`: **MIGRADO** — supabase.rpc as any→queryService.rpc+cast. **EX-012** (1 RPC sem tipo)
-- `diagnosticAnalyticsService.ts`: **MIGRADO** — supabase.rpc→queryService.rpc. Import supabase removido
-- `youtubeService.ts`: **MIGRADO** — supabase.functions.invoke direto→invokeEdgeFunction canônico
-- `supplierService.ts`: **JÁ CORRETO** — 2 eslint-disable as any removidos (→Record<string,unknown>)
+**ONDA 5 executada — Observabilidade em pages web:**
+- **39 pages** migradas de `console.*` → `logger.error/info/warn`
+- **~120 ocorrências** substituídas (todas eram `console.error`)
+- `import { logger } from '@/lib/logger'` adicionado em todos os arquivos
+- Processing automático via script PowerShell com fix manual para 9 arquivos com cabeçalho `/* eslint-disable */`
+- **Bônus identificado:** 20 components web com `console.*` residual → registrado como ONDA 6B
+- **Nenhuma page** importa `supabase` diretamente — zero violações arquiteturais detectadas
 
 ---
 
@@ -134,36 +126,37 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 | Ordens de Serviço | 🟢 | 🟢 | ONDA 1 ✅ — serviceOrderService + serviceOrderDetailService migrados |
 | Clientes | 🟢 | 🟢 | ONDA 1 ✅ — customerService migrado |
 | Veículos | 🟢 | 🟢 | ONDA 1 ✅ — vehicleService migrado |
-| Agendamentos | 🟢 | 🟡 | ONDA 2 ✅ — appointmentService migrado. Pages: console.* residual |
-| Financeiro | 🟢 | 🟡 | ONDA 2 ✅ — financialService já correto. Pages: console.* residual |
+| Agendamentos | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service migrado, console.* removido |
+| Financeiro | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service correto, console.* removido |
 | Catálogo MO | 🟢 | 🟢 | ONDA 2 ✅ — laborCatalogService já correto |
-| Peças | 🟢 | 🟡 | ONDA 2 ✅ — partService já correto. Pages: console.* residual |
-| Pedidos de Compra | 🟢 | 🟡 | ONDA 2 ✅ — purchaseOrderService já correto |
-| Cotações | 🟢 | 🟡 | ONDA 2 ✅ — quotationService já correto. Exceção RPC documentada |
-| WhatsApp | 🟢 | 🟢 | Hardening completo. 4 drifts de campo corrigidos (Rodada histórica) |
+| Peças | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service correto, console.* removido |
+| Pedidos de Compra | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service correto, console.* removido |
+| Cotações | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service correto. EX-005 (RPC). console.* removido |
+| WhatsApp | 🟢 | 🟢 | Hardening completo. 4 drifts de campo corrigidos |
 | OBD / DTCs | 🟢 | 🟢 | Pipeline de IA restaurado. Evidence + Upload FASE 0-4 ok |
-| Diagnóstico (service) | 🟢 | 🟡 | ONDA 3 ✅ — migrado. EX-001, EX-009, EX-010 documentadas |
-| Diagnóstico Upload (service) | 🟢 | 🟡 | ONDA 3 ✅ — migrado. EX-001, EX-009 (scan-reports bucket) |
-| Hipóteses (service) | 🟢 | 🟡 | ONDA 3 ✅ — migrado. import supabase removido |
-| Evidências (service) | 🟢 | 🟡 | ONDA 3 ✅ — migrado. EX-001, EX-003, EX-009 (3 ops storage) |
-| Guincho/Tow | 🟢 | 🟡 | ONDA 3 ✅ — já correto. queryService em todo o arquivo |
-| Knowledge Engine | 🟢 | 🟡 | ONDA 4 ✅ — migrado. EX-011 (4 RPCs sem tipo) |
-| Scanner Context | 🟢 | 🟡 | ONDA 4 ✅ — migrado. 3 tabelas sem tipo → interface local |
-| Notificações | 🟢 | 🟡 | ONDA 4 ✅ — migrado. Console.* residual nas pages |
-| Auditoria | 🟢 | 🟡 | ONDA 4 ✅ — migrado. Import supabase removido |
-| Health Score | 🟢 | 🟡 | ONDA 4 ✅ — migrado. invokeEdgeFunction preservado |
-| Reparos Confirmados | 🟢 | 🟡 | ONDA 4 ✅ — migrado. EX-001 preservada |
-| Service Intents | 🟢 | 🟡 | ONDA 4 ✅ — migrado. eslint-disable eliminados |
-| Cross-OS Patterns | 🟢 | 🟡 | ONDA 4 ✅ — migrado. EX-012 (RPC sem tipo) |
-| BI / Analytics | 🟢 | 🟡 | ONDA 4 ✅ — migrado. Logger adicionado. 4 views migradas |
-| YouTube DTC | 🟢 | 🟡 | ONDA 4 ✅ — supabase.functions.invoke→invokeEdgeFunction |
-| Fornecedores | 🟢 | 🟡 | ONDA 4 ✅ — eslint-disable removidos |
-| Sintomas | 🟢 | 🟡 | ONDA 4 ✅ — 8 calls + logger completo |
-| Correções Hodômetro | 🟢 | 🟡 | ONDA 4 ✅ — 4 calls + 2 RPCs. Lógica inline refatorada |
-| Diag. Analytics | 🟢 | 🟡 | ONDA 4 ✅ — supabase.rpc→queryService.rpc |
-| Dashboard/Analytics | 🟡 | 🟡 | console.* em pages → ONDA 5 |
-| Configurações | 🟡 | 🟡 | Settings.tsx: 5 console.error residuais → ONDA 5 |
-| Observabilidade | 🟡 | 🟡 | 50+ console.* em 15+ pages web → ONDA 5 |
+| Diagnóstico (service) | 🟢 | 🟢 | ONDA 3 ✅ + ONDA 5 ✅ — migrado. EX-001, EX-009, EX-010 |
+| Diagnóstico Upload (service) | 🟢 | 🟢 | ONDA 3 ✅ — migrado. EX-001, EX-009 |
+| Hipóteses (service) | 🟢 | 🟢 | ONDA 3 ✅ — migrado. import supabase removido |
+| Evidências (service) | 🟢 | 🟢 | ONDA 3 ✅ — migrado. EX-001, EX-003, EX-009 |
+| Guincho/Tow | 🟢 | 🟢 | ONDA 3 ✅ — já correto |
+| Knowledge Engine | 🟢 | 🟢 | ONDA 4 ✅ — migrado. EX-011 (4 RPCs sem tipo) |
+| Scanner Context | 🟢 | 🟢 | ONDA 4 ✅ — migrado. 3 tabelas sem tipo → interface local |
+| Notificações | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ — service + pages migrados |
+| Auditoria | 🟢 | 🟢 | ONDA 4 ✅ — migrado. Import supabase removido |
+| Health Score | 🟢 | 🟢 | ONDA 4 ✅ — migrado. invokeEdgeFunction preservado |
+| Reparos Confirmados | 🟢 | 🟢 | ONDA 4 ✅ — migrado. EX-001 preservada |
+| Service Intents | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ — service + pages migrados |
+| Cross-OS Patterns | 🟢 | 🟢 | ONDA 4 ✅ — migrado. EX-012 (RPC sem tipo) |
+| BI / Analytics | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ — service + pages migrados |
+| YouTube DTC | 🟢 | 🟢 | ONDA 4 ✅ — supabase.functions.invoke→invokeEdgeFunction |
+| Fornecedores | 🟢 | 🟢 | ONDA 4 ✅ — eslint-disable removidos |
+| Sintomas | 🟢 | 🟢 | ONDA 4 ✅ — 8 calls + logger completo |
+| Correções Hodômetro | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ — 4 calls + 2 RPCs + console.* removido |
+| Diag. Analytics | 🟢 | 🟢 | ONDA 4 ✅ — supabase.rpc→queryService.rpc |
+| Dashboard/Analytics | 🟢 | 🟢 | ONDA 5 ✅ — console.* → logger. import adicionado |
+| Configurações | 🟢 | 🟢 | ONDA 5 ✅ — 5 console.error → logger.error |
+| Observabilidade (pages) | 🟢 | 🟢 | ONDA 5 ✅ — 39 pages. ~120 console.* removidos. Zero violações |
+| Observabilidade (components) | 🟡 | 🟡 | 20 components com console.* residual → ONDA 6B |
 | Edge Functions | 🟢 | — | 34/35 fechadas. test-pdf em produção (remoção: ONDA 6) |
 | RLS / Banco | 🟢 | — | 167 migrations. Multi-role implementado. ROLE_PERMISSION_MATRIX vigente |
 | CI/CD | 🟢 | — | ci.yml + watchdog.yml verdes |
@@ -334,21 +327,23 @@ const { data, error } = await queryService
 
 ---
 
-### ▶️ ONDA 5 — PRÓXIMA (Observabilidade em pages web)
+### ✅ ONDA 5 — CONCLUÍDA
 
-**Problema:** 50+ `console.*` em 15+ pages. Estimativa:
-- `ServiceOrders.tsx` / `ServiceOrderDetail.tsx`
-- `Customers.tsx` / `Vehicles.tsx`
-- `Appointments.tsx` / `Financial.tsx`
-- `Settings.tsx` (5 console.error confirmados)
-- `Dashboard.tsx` / `Analytics.tsx`
+**SHA:** `6d500b3` | **Data:** 2026-03-18 | **build:** exit 0
+
+- 39 pages migradas de `console.*` → `logger.error/info/warn`
+- ~120 ocorrências substituídas
+- `import { logger }` adicionado em todos os arquivos
+- **Zero violações arquiteturais detectadas** nas pages
+- Bônus: 20 components com console.* identificados → ONDA 6B
 
 ---
 
-### 📋 ONDA 6 — Limpeza técnica
+### ▶️ ONDA 6 — ATIVA (Limpeza técnica)
 
 | Item | Problema | Risco |
 |------|---------|-------|
+| console.* em 20 components | 20 components residuais (não pages) | BAIXO |
 | Edge Function `test-pdf` | Em produção sem uso | MÉDIO — ocupa slot |
 | 2 migrations `20260310000000` | Timestamp duplicado | MÉDIO — pode gerar drift |
 | README.md repo privado | Possivelmente desatualizado | BAIXO |
@@ -359,7 +354,7 @@ const { data, error } = await queryService
 ### 📋 ONDA 7 — Frentes de produto
 
 | Frente | Pré-requisito | Estimativa |
-|--------|--------------|-----------|
+|--------|--------------| ----------|
 | OBD Knowledge Base + Profiles + Rules + Painel | Seção 16 GEMINI.md obrigatória | Grande |
 | OBD Center R4/R5 (mobile) | ONDA 7 do plano de produto | Médio |
 
@@ -369,6 +364,7 @@ const { data, error } = await queryService
 
 | Rodada | SHA | Data | O que foi feito | build |
 |--------|-----|------|-----------------|:---:|
+| 6 — ONDA 5 | `6d500b3` | 2026-03-18 | 39 pages: console.*→logger. ~120 ocorrências. Zero violações. | ✅ |
 | 5 — ONDA 4 | `3763e8e` | 2026-03-17 | 14 services suporte migrados. EX-011+EX-012. | ✅ |
 | 4 — ONDA 3 | `e53fc55` | 2026-03-17 | 4 services migrados + towService confirmado correto | ✅ |
 | 3 — GEMINI.md Seção 18 | `a0e75b8` | 2026-03-17 | STATUS como memória permanente formalizada | ✅ |
@@ -389,7 +385,7 @@ const { data, error } = await queryService
 |----|---------|------|----------------|
 | D-001 | Catálogo de MO, Peças, Cotações e Financeiro são **web-only** | 2026-03-17 | — |
 | D-002 | queryService é o único ponto de acesso a tabelas. supabase direto banido em UI (pages/hooks/components) | 2026-03-17 | `599bff4` |
-| D-003 | logger é o único ponto de log. console.* banido em services | 2026-03-17 | `dd67fd0` |
+| D-003 | logger é o único ponto de log. console.* banido em services e pages | 2026-03-18 | `6d500b3` |
 | D-004 | Modo Evolução de Produto ativo desde 2026-03-16. Saída do modo estabilização formal. | 2026-03-16 | — |
 | D-005 | Multi-role implementado. ROLE_PERMISSION_MATRIX é a fonte canônica de permissões | 2026-03-17 | — |
 | D-006 | WhatsApp modal de aprovação usa short OS codes (não heurísticas). Hardening completado | 2026-03-13 | `2f5967f` |
@@ -405,9 +401,10 @@ const { data, error } = await queryService
 | R-002 | 3 Dependabot alerts (1 critical, 1 high, 1 moderate) no repo privado | ALTO | Não investigado | ONDA 6 |
 | R-003 | Edge Function `test-pdf` em produção | MÉDIO | Não removida | ONDA 6 |
 | R-004 | 2 migrations com timestamp `20260310000000` | MÉDIO | Não verificado | ONDA 6 |
-| R-005 | 50+ console.* em pages web | BAIXO | Mapeado | ONDA 5 |
+| R-005 | ~~50+ console.* em pages web~~ | ~~BAIXO~~ | ✅ RESOLVIDO — ONDA 5 (39 pages, ~120 ocorrências) | — |
 | R-006 | ~~`diagnosticUploadService` e `evidenceService` com supabase.storage direto~~ | ~~BAIXO~~ | ✅ RESOLVIDO — EX-009 documentada (ONDA 3) | — |
 | R-007 | OBD Knowledge Base sem auditoria prévia (Seção 16 GEMINI.md obrigatória) | MÉDIO | Bloqueado até auditoria | ONDA 7 |
+| R-008 | 20 components web com console.* residual | BAIXO | Mapeado | ONDA 6B |
 
 ---
 
@@ -423,37 +420,27 @@ Antigravity, continuando a Missão Mestra.
 Leia o STATUS.md em:
 https://raw.githubusercontent.com/You-Telecom-Provedor-de-internet/YouAutoCar-Status/main/STATUS.md
 
-Estado atual: ONDA 4 concluída. SHA base: 3763e8e. Rodada 5 iniciando.
+Estado atual: ONDA 5 concluída. SHA base: 6d500b3. Rodada 6 iniciando.
 
-Próxima execução: ONDA 5 — Observabilidade em pages web
+Próxima execução: ONDA 6 — Limpeza técnica + console.* em components
 
 Objetivo:
-- Substituir todos os console.* por logger estruturado nas pages web
-- Preservar comentários relevantes e não alterar lógica de negócio
-- Foco nos arquivos com mais ocorrências:
-  - ServiceOrders.tsx / ServiceOrderDetail.tsx
-  - Customers.tsx / Vehicles.tsx
-  - Appointments.tsx / Financial.tsx
-  - Settings.tsx (5 console.error confirmados)
-  - Dashboard.tsx / Analytics.tsx
-  - Demais pages com ocorrências menores
-
-Bônus verificar:
-- Se alguma page importa supabase diretamente (violação arquitetural) → reportar
-- Se alguma page usa console.* críticos que mascaram erros reais → priorizar
+1. Substituir console.* por logger em 20 components web identificados
+2. Investigar Dependabot alerts (1 critical, 1 high, 1 moderate) e documentar
+3. Verificar se Edge Function test-pdf pode ser removida com segurança
+4. Verificar migrations com timestamp duplicado `20260310000000`
 
 Protocolo obrigatório:
-1. Auditar cada page com grep para console.*
-2. Substituir por logger.info / logger.error / logger.warn
-3. Importar logger onde não existir
-4. Não alterar lógica — apenas o canal de log
-5. Validar build (npm run build no apps/web)
-6. Commit: refactor(pages): ONDA 5 — console.* → logger em pages web
-7. Atualizar docs/audit/STATUS.md no repo privado
-8. Atualizar STATUS.md no repo público
+1. Grep por console.* em apps/web/src/components/
+2. Substituir por logger.error/warn/info + adicionar import onde faltar
+3. Verificar Dependabot via GitHub (não alterar dependencias sem Owner aprovar)
+4. Validar build (npm run build no apps/web)
+5. Commit: refactor(components): ONDA 6 — console.* → logger em components web
+6. Atualizar docs/audit/STATUS.md no repo privado
+7. Atualizar STATUS.md no repo público
 
 Formato de entrega:
-BLOCO 1 — inventário por page (arquivo + qtd console.*)
+BLOCO 1 — inventário por componente (arquivo + qtd console.*)
 BLOCO 2 — arquivos alterados
 BLOCO 3 — validação (build = 0 erros)
 BLOCO 4 — risco residual
