@@ -1,140 +1,86 @@
 # YouAutoCar — MEMÓRIA OPERACIONAL DO PROJETO
-<!-- ARQUIVO GERENCIADO AUTOMATICAMENTE PELO AGENTE ANTIGRAVITY -->
-<!-- Este arquivo é a fonte de verdade operacional entre Antigravity, ChatGPT e Owner -->
-<!-- ⚠️ Não edite manualmente sem atualizar também o repo público -->
-<!-- URL PÚBLICA (ChatGPT lê aqui): -->
-<!-- https://raw.githubusercontent.com/You-Telecom-Provedor-de-internet/YouAutoCar-Status/main/STATUS.md -->
-<!-- Repo público: https://github.com/You-Telecom-Provedor-de-internet/YouAutoCar-Status -->
-
----
-
-## 🔖 ÍNDICE RÁPIDO
-
-1. [PROTOCOLO MULTI-AGENTE](#1-protocolo-multi-agente)
-2. [ESTADO ATUAL](#2-estado-atual)
-3. [MAPA DE DOMÍNIOS](#3-mapa-de-domínios)
-4. [ARQUITETURA — CONTRATOS OBRIGATÓRIOS](#4-arquitetura--contratos-obrigatórios)
-5. [EXCEÇÕES ARQUITETURAIS VIGENTES](#5-exceções-arquiteturais-vigentes)
-6. [ONDAS — PLANO DE EXECUÇÃO](#6-ondas--plano-de-execução)
-7. [HISTÓRICO DE RODADAS](#7-histórico-de-rodadas)
-8. [DECISÕES FORMAIS REGISTRADAS](#8-decisões-formais-registradas)
-9. [RISCOS RESIDUAIS ABERTOS](#9-riscos-residuais-abertos)
-10. [PROMPT SUGERIDO PARA PRÓXIMA SESSÃO](#10-prompt-sugerido-para-próxima-sessão)
-
----
-
-## 1. PROTOCOLO MULTI-AGENTE
-
-| Agente | Papel | O que pode fazer |
-|--------|-------|-----------------|
-| **Antigravity** | Execução + Commit | Lê e atualiza STATUS.md, executa código, faz push para ambos os repos |
-| **ChatGPT** | Consultoria + Prompts | Lê STATUS.md via URL pública, sugere próximos prompts ao Owner |
-| **Owner** | Ponte + Decisão | Repassa prompts entre agentes, decide prioridades e escopo |
-
-**URL para leitura pelo ChatGPT (raw, sem autenticação):**
-```
-https://raw.githubusercontent.com/You-Telecom-Provedor-de-internet/YouAutoCar-Status/main/STATUS.md
-```
-
----
 
 ## 2. ESTADO ATUAL
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 11 |
-| **SHA código** | `477af2a` |
-| **SHA status** | `477af2a` |
+| **Rodada** | 12 |
+| **SHA código** | `7192854` (zero código alterado — validação) |
+| **SHA status** | `0424eab` |
 | **Data** | 2026-03-18 |
-| **Modo** | EVOLUÇÃO DE PRODUTO — Limpeza Documental Executada |
-| **build** | ✅ exit 0 (zero código de produção tocado) |
+| **Modo** | EVOLUÇÃO DE PRODUTO — ONDA 7 Validação Completa |
+| **tsc** | ✅ 0 erros |
+| **build** | ✅ exit 0 |
 | **ONDA ativa** | ONDA 7 Fase 3+ pendente (Owner) |
-| **Próxima ação obrigatória** | Owner decide: ONDA 7 Fase 3+ (knowledge_rules, dtc_analyze, OBD R4/R5) |
 
-### Resumo da última rodada
+### Resumo Rodada 12 — Validação Completa OBD Knowledge Base
 
-**Rodada 11 — Limpeza Documental Executada (4 frentes):**
+| RPC | Status |
+|-----|:------:|
+| `get_knowledge_stats` | ✅ OK |
+| `search_knowledge` | ✅ OK |
+| `search_knowledge_fulltext` | ✅ OK |
+| `ingest_knowledge_from_repairs` | ✅ OK |
+| `get_cross_os_patterns` | ✅ OK |
 
-**1. DEPRECIADOS (banner ⚠️ LEGADO) — 15 arquivos:**
-- `docs/AI/*` (8 arquivos)
-- `docs/00_START_HERE.md`
-- `docs/01_GOVERNANCE/AI_DEVELOPMENT_WORKFLOW.md`
-- `docs/01_GOVERNANCE/architecture_rules.md`
-- `docs/09_AUDIT/purge_progress.md`
-- `docs/09_AUDIT/migration_planning/*` (3 arquivos)
-
-**2. ATUALIZADOS (alinhar com GEMINI.md) — 2 arquivos:**
-- `global_rules.md` §5 — milestones M16-M22 → ONDAs; AI_CONTEXT_SNAPSHOT → STATUS.md
-- `SERVICES_AND_DATA_ACCESS.md` — exemplo `supabase.from()` → `queryService.from()`
-
-**3. REMOVIDOS (lixo técnico) — 3 arquivos:**
-- `docs/09_AUDIT/schema_dump_temp.sql`
-- `docs/09_AUDIT/teste01.pdf`
-- `docs/13_DIAGNOSTIC_ENGINE/diagnostico_mapa.md.resolved`
-
-**4. MANTIDOS (referência histórica) — ~140 arquivos**
+- Services: 2/2 corretos (queryService.rpc())
+- Dashboards: 2/2 HTTP 200 (`/knowledge-engine`, `/cross-os-patterns`)
+- EX-011/EX-012: já resolvidos (Rodada 9)
 
 ---
 
 ## ✅ HIERARQUIA DOCUMENTAL EFETIVADA (D-011)
 
-| Camada | Escopo | Arquivos |
-|--------|--------|----------|
-| **1 — Governança** (LEI) | Manda em tudo | `GEMINI.md`, `STATUS.md`, `IDENTITY_CONTRACT`, `ROLE_PERMISSION_MATRIX` |
-| **2 — Direção Estratégica** | Visão IA | `docs/10_AI_STRATEGY/*` |
-| **3 — Referência** | Consulta | `docs/02_PRODUCT/`, `docs/03_DB/`, contratos canônicos |
-| **4 — Execução** | Agentes/Operação | `.agents/rules/`, `.agents/skills/`, `.agents/workflows/` |
-| **❌ Legado** (NÃO guia) | Banner ⚠️ | `docs/AI/*`, `00_START_HERE`, `architecture_rules`, `AI_DEVELOPMENT_WORKFLOW` |
+| Camada | Arquivos |
+|--------|----------|
+| **1 — Governança** (LEI) | `GEMINI.md`, `STATUS.md`, contratos canônicos |
+| **2 — Estratégica** | `docs/10_AI_STRATEGY/*` |
+| **3 — Referência** | `docs/02_PRODUCT/`, `docs/03_DB/` |
+| **4 — Execução** | `.agents/` |
+| **❌ Legado** | `docs/AI/*`, `00_START_HERE` (banner ⚠️) |
 
 ---
 
-## 8. DECISÕES FORMAIS REGISTRADAS
+## Decisões Formais (D-001 a D-011)
 
-| ID | Decisão | Data |
-|----|---------|------|
-| D-001 | Catálogo MO, Peças, Cotações e Financeiro são **web-only** | 2026-03-17 |
-| D-002 | queryService é o único ponto de acesso a tabelas | 2026-03-17 |
-| D-003 | logger é o único ponto de log. console.* banido | 2026-03-18 |
-| D-004 | Modo Evolução de Produto ativo desde 2026-03-16 | 2026-03-16 |
-| D-005 | Multi-role implementado. ROLE_PERMISSION_MATRIX canônico | 2026-03-17 |
-| D-006 | WhatsApp usa short OS codes | 2026-03-13 |
-| D-007 | Repo público YouAutoCar-Status canal oficial ChatGPT | 2026-03-17 |
-| D-008 | Hierarquia: GEMINI=lei, STATUS=memória, 10_AI_STRATEGY=direção | 2026-03-18 |
-| D-009 | docs/10_AI_STRATEGY/ obrigatório antes de features IA | 2026-03-18 |
-| D-010 | Autoridade documental formalizada. docs/AI/ é LEGADO | 2026-03-18 |
-| D-011 | Limpeza documental executada. Hierarquia 5 camadas efetivada | 2026-03-18 |
+| ID | Decisão |
+|----|------|
+| D-011 | Limpeza documental: 15 banners, 2 atualizados, 3 removidos |
+| D-010 | docs/AI/ é LEGADO |
+| D-008 | Hierarquia: GEMINI=lei, STATUS=memória |
 
 ---
 
-## 9. RISCOS RESIDUAIS ABERTOS
+## Riscos Abertos
 
-| ID | Risco | Gravidade | Status |
-|----|-------|:---------:|--------|
-| R-001 | RPC `import_quotation_prices` sem tipo gerado | MÉDIO | EX-005 aceito |
-| R-002 | 3 Dependabot alerts (1 critical, 1 high, 1 moderate) | ALTO | Owner decide |
-| R-003 | Edge Function `test-pdf` sem consumidores | MÉDIO | Owner decide |
-| R-004 | 2 migrations com timestamp igual | MÉDIO | Owner decide |
-| R-005 a R-011 | Todos resolvidos | — | ✅ |
+| ID | Risco | Gravidade |
+|----|-------|:---------:|
+| R-001 | RPC `import_quotation_prices` sem tipo | MÉDIO |
+| R-002 | 3 Dependabot alerts | ALTO |
+| R-003 | Edge Function `test-pdf` sem consumidores | MÉDIO |
+| R-004 | 2 migrations timestamp igual | MÉDIO |
+| R-005 a R-011 | Todos resolvidos | ✅ |
 
 ---
 
-## 10. PROMPT SUGERIDO PARA PRÓXIMA SESSÃO
+## Prompt Sugerido
 
-**Próxima frente — ONDA 7 Fase 3+ (código):**
 ```
-Antigravity, ONDA 7 Fase 2 concluída + Limpeza Documental concluída (Rodada 11).
+Antigravity, ONDA 7 Fases 1+2 concluídas + Validação completa (Rodada 12).
 
-Decisões Owner necessárias para prosseguir:
-1. CRUD `knowledge_rules` — web-only ou web+mobile?
-2. Multi-tenant `knowledge_rules` — regras por company ou globais?
-3. Unificação `analisar-dtc` vs `dtc_analyze` — auditar duplicação
-4. OBD Center R4/R5 mobile — integração com Knowledge Base
+Todas as 5 RPCs estão funcionais no Supabase. Dashboards acessíveis.
+
+Decisões Owner necessárias:
+1. CRUD knowledge_rules — web-only ou web+mobile?
+2. Multi-tenant knowledge_rules — por company ou globais?
+3. Unificação analisar-dtc vs dtc_analyze
+4. OBD Center R4/R5 mobile
 ```
 
 ### Itens Owner (paralelos):
-1. **Dependabot alerts** — 1 critical, 1 high, 1 moderate
-2. **Edge Function `test-pdf`** — remover?
-3. **Migrations duplicadas** `20260310000000` — renomear?
-4. **CRUD knowledge_rules** — decisão de escopo
+1. Dependabot alerts — 1 critical, 1 high, 1 moderate
+2. Edge Function `test-pdf` — remover?
+3. Migrations duplicadas `20260310000000` — renomear?
+4. CRUD knowledge_rules — decisão de escopo
 
 ---
