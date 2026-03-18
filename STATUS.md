@@ -1,86 +1,85 @@
 # YouAutoCar — MEMÓRIA OPERACIONAL DO PROJETO
+<!-- ARQUIVO GERENCIADO AUTOMATICAMENTE PELO AGENTE ANTIGRAVITY -->
+<!-- Este arquivo é a fonte de verdade operacional entre Antigravity, ChatGPT e Owner -->
+<!-- ⚠️ Não edite manualmente sem atualizar também o repo público -->
+<!-- URL PÚBLICA (ChatGPT lê aqui): -->
+<!-- https://raw.githubusercontent.com/You-Telecom-Provedor-de-internet/YouAutoCar-Status/main/STATUS.md -->
+<!-- Repo público: https://github.com/You-Telecom-Provedor-de-internet/YouAutoCar-Status -->
+
+---
 
 ## 2. ESTADO ATUAL
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 12 |
-| **SHA código** | `7192854` (zero código alterado — validação) |
-| **SHA status** | `0424eab` |
+| **Rodada** | 13 |
+| **SHA código** | `780b5e6` |
+| **SHA status** | `0fe3a8b` |
 | **Data** | 2026-03-18 |
-| **Modo** | EVOLUÇÃO DE PRODUTO — ONDA 7 Validação Completa |
+| **Modo** | EVOLUÇÃO DE PRODUTO — ONDA 7 Fase 3 Concluída |
 | **tsc** | ✅ 0 erros |
 | **build** | ✅ exit 0 |
-| **ONDA ativa** | ONDA 7 Fase 3+ pendente (Owner) |
+| **flutter analyze** | ✅ 0 erros |
+| **ONDA ativa** | ONDA 7 Fase 4+ pendente (Owner) |
+| **Próxima ação obrigatória** | Owner decide: ONDA 7 Fase 4 (knowledge_rules CRUD) / Fase 5 (OBD R4/R5) |
 
-### Resumo Rodada 12 — Validação Completa OBD Knowledge Base
+### Resumo da última rodada
 
-| RPC | Status |
-|-----|:------:|
-| `get_knowledge_stats` | ✅ OK |
-| `search_knowledge` | ✅ OK |
-| `search_knowledge_fulltext` | ✅ OK |
-| `ingest_knowledge_from_repairs` | ✅ OK |
-| `get_cross_os_patterns` | ✅ OK |
+**Rodada 13 — ONDA 7 Fase 3: Duplicação DTC Resolvida (D-012):**
 
-- Services: 2/2 corretos (queryService.rpc())
-- Dashboards: 2/2 HTTP 200 (`/knowledge-engine`, `/cross-os-patterns`)
-- EX-011/EX-012: já resolvidos (Rodada 9)
+**Classificação**: V1/V2 — `dtc_analyze` é legado (V1), `analisar-dtc` é a função canônica (V2).
 
----
+| Critério | `analisar-dtc` (canônica) | `dtc_analyze` (legado) |
+|----------|:-------------------------:|:----------------------:|
+| IA primária | Gemini 2.0 Flash | OpenAI GPT-3.5-turbo |
+| Fallback | OpenAI GPT-4o-mini + determinístico | Mock simples |
+| Contexto OBD | ✅ engine_profile, freeze_frame, mode06 | ❌ |
+| Persistência BD | ✅ Salva em `diagnosticos` | ❌ |
+| Linhas | 327 | 162 |
 
-## ✅ HIERARQUIA DOCUMENTAL EFETIVADA (D-011)
+**Consumidores após migração:**
+- Web `dtcAiService.ts`: `analisar-dtc` (primária) → `dtc_analyze` (fallback) — **inalterado**
+- Mobile `DtcAiService.dart` (OBD): `analisar-dtc` — **já correto**
+- Mobile `diagnostics_repository_impl.dart` (VM): `analisar-dtc` — **MIGRADO nesta rodada** (era `dtc_analyze`)
 
-| Camada | Arquivos |
-|--------|----------|
-| **1 — Governança** (LEI) | `GEMINI.md`, `STATUS.md`, contratos canônicos |
-| **2 — Estratégica** | `docs/10_AI_STRATEGY/*` |
-| **3 — Referência** | `docs/02_PRODUCT/`, `docs/03_DB/` |
-| **4 — Execução** | `.agents/` |
-| **❌ Legado** | `docs/AI/*`, `00_START_HERE` (banner ⚠️) |
-
----
-
-## Decisões Formais (D-001 a D-011)
-
-| ID | Decisão |
-|----|------|
-| D-011 | Limpeza documental: 15 banners, 2 atualizados, 3 removidos |
-| D-010 | docs/AI/ é LEGADO |
-| D-008 | Hierarquia: GEMINI=lei, STATUS=memória |
+**Arquivos alterados:**
+- `diagnostics_repository_impl.dart` — invoke `dtc_analyze` → `analisar-dtc` + adaptador de formato
+- `dtc_analyze/index.ts` — banner ⚠️ LEGADO adicionado
 
 ---
 
-## Riscos Abertos
+## D-012 — Decisão Formal
 
-| ID | Risco | Gravidade |
-|----|-------|:---------:|
-| R-001 | RPC `import_quotation_prices` sem tipo | MÉDIO |
-| R-002 | 3 Dependabot alerts | ALTO |
-| R-003 | Edge Function `test-pdf` sem consumidores | MÉDIO |
-| R-004 | 2 migrations timestamp igual | MÉDIO |
-| R-005 a R-011 | Todos resolvidos | ✅ |
+`analisar-dtc` é a função canônica para análise DTC. `dtc_analyze` é legado V1 (mantido apenas como fallback web). Mobile totalmente migrado. SHA: `780b5e6`.
 
 ---
 
-## Prompt Sugerido
+## HISTÓRICO RECENTE
+
+| Rodada | SHA | Data | O que foi feito | build |
+|--------|-----|------|-----------------|:---:|
+| 13 — ONDA 7F3 DTC | `780b5e6` | 2026-03-18 | D-012: analisar-dtc canônica, dtc_analyze legado. Mobile migrado. Banner legado. | ✅ |
+| 12 — Validação ONDA 7 | `7192854` | 2026-03-18 | 5/5 RPCs testadas. 2/2 services OK. 2/2 dashboards HTTP 200. | ✅ |
+| 11 — Limpeza Doc | `477af2a` | 2026-03-18 | 15 depreciados, 2 atualizados, 3 removidos. | ✅ |
+
+---
+
+## PRÓXIMO PROMPT SUGERIDO
 
 ```
-Antigravity, ONDA 7 Fases 1+2 concluídas + Validação completa (Rodada 12).
+Antigravity, ONDA 7 Fases 1-3 concluídas (Rodada 13).
 
-Todas as 5 RPCs estão funcionais no Supabase. Dashboards acessíveis.
+Todas as 5 RPCs funcionais. Dashboards OK. Duplicação DTC resolvida (D-012).
 
-Decisões Owner necessárias:
+Decisões Owner necessárias para prosseguir:
 1. CRUD knowledge_rules — web-only ou web+mobile?
-2. Multi-tenant knowledge_rules — por company ou globais?
-3. Unificação analisar-dtc vs dtc_analyze
-4. OBD Center R4/R5 mobile
+2. Multi-tenant knowledge_rules — regras por company ou globais?
+3. OBD Center R4/R5 mobile — integração com Knowledge Base
 ```
 
 ### Itens Owner (paralelos):
-1. Dependabot alerts — 1 critical, 1 high, 1 moderate
-2. Edge Function `test-pdf` — remover?
-3. Migrations duplicadas `20260310000000` — renomear?
-4. CRUD knowledge_rules — decisão de escopo
-
----
+1. **Dependabot alerts** — 1 critical, 1 high, 1 moderate
+2. **Edge Function `test-pdf`** — remover?
+3. **Migrations duplicadas** `20260310000000` — renomear?
+4. **CRUD knowledge_rules** — decisão de escopo
+5. **Fase 3C futura** — avaliar remoção do fallback `dtc_analyze` no web
