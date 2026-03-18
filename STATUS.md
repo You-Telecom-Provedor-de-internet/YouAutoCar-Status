@@ -69,7 +69,7 @@ Nunca sugira algo fora do que está no plano — respeite o GEMINI.md como lei.
 ### ✅ ONDA 1 — CONCLUÍDA (SHA: `599bff4` — 2026-03-17)
 
 | # | Arquivo | Resultado |
-|---|---------|-----------|  
+|---|---------|---------|
 | 1 | `serviceOrderService.ts` | ✅ queryService — 20+ calls migradas |
 | 2 | `serviceOrderDetailService.ts` | ✅ queryService — 30+ calls migradas. Exceções: auth/functions/realtime documentadas |
 | 3 | `customerService.ts` | ✅ queryService — 12+ calls migradas. Exceções: auth/functions documentadas |
@@ -83,7 +83,7 @@ Nunca sugira algo fora do que está no plano — respeite o GEMINI.md como lei.
 ### ▶️ ONDA 2 — PRÓXIMA EXECUÇÃO
 
 | # | Arquivo | Problema |
-|---|---------|---------|
+|---|---------|---------| 
 | 5 | `financialService.ts` | `supabase` direto |
 | 6 | `appointmentService.ts` | `supabase` direto |
 | 7 | `laborCatalogService.ts` | `supabase` direto |
@@ -94,7 +94,7 @@ Nunca sugira algo fora do que está no plano — respeite o GEMINI.md como lei.
 ### ONDA 3 — Services de domínio específico
 
 | # | Arquivo | Problema |
-|---|---------|---------|
+|---|---------|---------| 
 | 11 | `diagnosticService.ts` | `supabase` direto |
 | 12 | `diagnosticUploadService.ts` | `supabase` direto |
 | 13 | `hypothesisService.ts` | `supabase` direto |
@@ -140,24 +140,34 @@ Nunca sugira algo fora do que está no plano — respeite o GEMINI.md como lei.
 
 ## 💬 PROMPT SUGERIDO PARA PRÓXIMA SESSÃO
 
-> Antigravity, continuando a Missão Mestra.
-> Leia o STATUS.md em `docs/audit/STATUS.md` do repo principal.
-> Estado atual: ONDA 1 concluída. SHA base: `599bff4`.
->
-> **Próxima execução: ONDA 2**
-> Migrar `supabase` direto → `queryService.from()` nos 6 services secundários:
-> - `financialService.ts`
-> - `appointmentService.ts`
-> - `laborCatalogService.ts`
-> - `partService.ts`
-> - `purchaseOrderService.ts`
-> - `quotationService.ts`
->
-> Protocolo obrigatório (igual à ONDA 1):
-> 1. Ler cada service completo antes de alterar
-> 2. Listar todos os pontos com `supabase.from()` e `console.*`
-> 3. Migrar → `queryService.from()` + `logger`
-> 4. Documentar exceções reais (auth, storage, realtime, functions.invoke)
-> 5. Validar `tsc --noEmit` — 0 erros
-> 6. Commit com SHA
-> 7. Atualizar `docs/audit/STATUS.md` no repo privado E `STATUS.md` neste repo público
+IMPORTANTE: Copie o bloco abaixo integralmente e envie ao Antigravity.
+
+---
+
+Antigravity, continuando a Missão Mestra.
+
+Leia o STATUS.md público em:
+https://raw.githubusercontent.com/You-Telecom-Provedor-de-internet/YouAutoCar-Status/main/STATUS.md
+
+Estado atual: ONDA 1 concluída. SHA base: 599bff4.
+
+Próxima execução: ONDA 2
+Migrar supabase direto para queryService.from() nos 6 services secundários:
+- financialService.ts
+- appointmentService.ts
+- laborCatalogService.ts
+- partService.ts
+- purchaseOrderService.ts
+- quotationService.ts
+
+Protocolo obrigatório (igual à ONDA 1):
+1. Ler cada service completo antes de alterar
+2. Listar todos os pontos com supabase.from() e console.*
+3. Migrar para queryService.from() e logger estruturado
+4. Documentar exceções reais (auth, realtime, functions.invoke)
+5. Validar tsc --noEmit — 0 erros
+6. Commit com SHA
+7. Atualizar docs/audit/STATUS.md no repo privado E STATUS.md no repo público:
+   https://raw.githubusercontent.com/You-Telecom-Provedor-de-internet/YouAutoCar-Status/main/STATUS.md
+
+---
