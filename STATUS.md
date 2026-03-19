@@ -90,8 +90,8 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 24 |
-| **SHA código** | `4d7f62d` |
+| **Rodada** | 24C |
+| **SHA código** | `6152a84` |
 | **SHA status** | (atualizar após commit) |
 | **Data** | 2026-03-19 |
 | **Modo** | EVOLUÇÃO DE PRODUTO — Auditoria Funcional OS (web) |
@@ -103,15 +103,12 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 
 ### Resumo da última rodada
 
-**Rodada 24 — Schema Drift + Bug 400 Checklist + Console.error residuais:**
+**Rodada 24C — Fix Catálogo de Peças e Serviços na OS:**
 
-- ✅ **diagnosticService.ts:** 3 fixes schema drift — `created_at` → `started_at`, `os_trips` → `trip_sessions` com `vehicle_id`
-- ✅ **DiagnosticsTab.tsx:** `vehicle_health_scores` → `vehicle_health_snapshots` (tabela real) + Edge Function `ai-analyze-dtc` → `analisar-dtc` via `invokeEdgeFunction`
-- ✅ **diagnosticUploadService.ts:** Mensagem enganosa "Timeout/Erro IA" → mensagem precisa sobre falha de parsing PDF
-- ✅ **useDiagnostics.ts:** `fetchOsTrips` com `vehicleId` (nova assinatura) + 4 `console.error` → `logger.error` (D-003)
-- ✅ **Bug 400 Checklist — CAUSA RAIZ:** `CHECKLIST_TEMPLATES` local com categorias inválidas (`iluminacao/freios/suspensao/pneus`) que violam CHECK constraint do banco (`solo/elevado/eletrica/motor`). Status `nao_verificado` violava enum canônico `diagnostic_check_status` (`pass/warn/fail`)
-- ✅ **Fix Checklist:** Removido `CHECKLIST_TEMPLATES` local, importado canônico de `constants.ts`. Status migrados: `nao_verificado`→`warn`, `troca`→`fail`, `ok`→`pass`. `CHECKLIST_STATUS_CONFIG` e tipo `ChecklistItem.status` atualizados
-- ✅ `tsc --noEmit` = 0 erros
+- ✅ **BUG-1 partService.ts:** Schema drift `parts_catalog` — query usava `default_price`/`sku` inexistentes, corrigido para `average_price` (sem `sku`). Erro HTTP 400 abortava TODA a busca.
+- ✅ **BUG-2 serviceOrderDetailService.ts:** `searchLaborCatalog` usava `.maybeSingle()` que falha com 2+ memberships. Corrigido para `.limit(1)`. Usuário admin com 2 empresas era o cenário de falha.
+- ✅ Validado via browser: serviços "troca" → 20+ resultados, peças "freio" → catálogo + global
+- ✅ `tsc --noEmit` = 0 erros, `npm run build` = OK
 
 ---
 
@@ -413,6 +410,7 @@ const { data, error } = await queryService
 
 | Rodada | SHA | Data | O que foi feito | build |
 |--------|-----|------|-----------------|:---:|
+| 24C — Fix Catálogo Peças+Serviços | `6152a84` | 2026-03-19 | BUG-1: schema drift parts_catalog (default_price→average_price). BUG-2: .maybeSingle()→.limit(1) para multi-membership. Ambos validados via browser | ✅ |
 | 24 — Schema Drift + Bug 400 Checklist | `4d7f62d` | 2026-03-19 | 12 correções: 3 schema drift (diagnosticService), 2 tabela/EF errada (DiagnosticsTab), msg enganosa (diagnosticUploadService), 4 console→logger (useDiagnostics), bug 400 Checklist (categorias+status inválidos), CHECKLIST_STATUS_CONFIG migrado para pass/warn/fail | ✅ |
 | 23 — Fix Identity Drift Triggers | `dac2269` | 2026-03-19 | FK violation 23503 corrigida: 2 triggers (notify_on_os_created, notify_on_os_status_change) usavam public.users.id em vez de auth.users.id. Toast [object Object] fix (3 arquivos). OS criada com sucesso. | ✅ |
 | 22 — Auditoria Funcional OS | `19ce537` | 2026-03-19 | 3 bugs OS corrigidos: identity drift customerService, contrato NewClientModal, contrato NewVehicleModal. Validação via navegador. | ✅ |
@@ -500,25 +498,27 @@ const { data, error } = await queryService
 
 ### Contexto para próxima sessão
 
-**Rodada 24 — Schema Drift + Bug 400 Checklist:**
-- ✅ 12 correções aplicadas: schema drift, tabela/EF inexistente, msg enganosa, console→logger, bug 400 Checklist (SHA `4d7f62d`)
-- ✅ tsc 0 erros | localhost operacional
+**Rodada 24C — Fix Catálogo Peças+Serviços:**
+- ✅ BUG-1: schema drift parts_catalog corrigido (SHA `6152a84`)
+- ✅ BUG-2: multi-membership .maybeSingle() corrigido
+- ✅ Ambos validados via browser
 
 **Próxima frente sugerida:**
 ```
 Antigravity, continue a AUDITORIA FUNCIONAL PONTA A PONTA — ORDEM DE SERVIÇO (web).
 
-Rodada 24 corrigiu 12 bugs de schema drift e checklist.
+Rodada 24C corrigiu catálogos de peças e serviços.
 Agora valide as tabs restantes via navegador:
 
-1. Abrir detalhes da OS e testar aba Checklist (gerar, salvar, mudar status)
-2. Testar aba OBD (importar PDF, DTC manual, vincular scan)
+1. Testar aba Checklist (gerar, salvar, mudar status)
+2. Testar aba OBD (importar PDF, DTC manual)
 3. Testar aba AI Copilot (geração de análise)
 4. Testar aba Hipóteses (geração IA, DTCs)
-5. Testar edição de OS (mudar status, adding itens, serviços, peças)
+5. Testar edição de OS (mudar status, serviços, peças)
 6. Testar aba Fotos e Evidências
+7. Testar geração/envio de PDF e cotação
 
-Credenciais: haisemberg@youtelecom.com.br / Cd1aamssS$$
+Credenciais: haisemberg@youtelecom.com.br / 123456
 Modo: validação via navegador + correção imediata.
 ```
 
