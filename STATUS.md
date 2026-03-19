@@ -92,7 +92,7 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 |-------|-------|
 | **Rodada** | 20 |
 | **SHA código** | `81c79e2` |
-| **SHA status** | pendente |
+| **SHA status** | `4dba65f` |
 | **Data** | 2026-03-19 |
 | **Modo** | EVOLUÇÃO DE PRODUTO — hotfix tela branca |
 | **tsc** | ✅ 0 erros |
