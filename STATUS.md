@@ -90,28 +90,26 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 21 |
-| **SHA código** | `f6cc561` |
-| **SHA status** | `285a477` |
+| **Rodada** | 22 |
+| **SHA código** | `19ce537` |
+| **SHA status** | (atualizar após commit) |
 | **Data** | 2026-03-19 |
-| **Modo** | EVOLUÇÃO DE PRODUTO — Auditoria CI/CD + fix vite |
+| **Modo** | EVOLUÇÃO DE PRODUTO — Auditoria Funcional OS (web) |
 | **tsc** | ✅ 0 erros |
-| **build** | ✅ exit 0 (31.89s) |
+| **build** | ✅ exit 0 (27.24s) |
 | **flutter analyze** | ✅ 0 erros |
-| **ONDA ativa** | Manutenção CI/CD |
-| **Próxima ação obrigatória** | Owner: resolver billing GitHub (P-001) |
+| **ONDA ativa** | Auditoria Funcional Ponta a Ponta |
+| **Próxima ação obrigatória** | Continuar auditoria funcional (outros fluxos OS) |
 
 ### Resumo da última rodada
 
-**Rodada 21 — Auditoria CI/CD + fix vite:**
+**Rodada 22 — Auditoria Funcional OS (web) — validação via navegador:**
 
-- ✅ Auditoria completa: 231 workflow runs falhados — causa = billing/spending limit do GitHub
-- ✅ Nenhum job sequer iniciou — runners bloqueados por pagamento
-- ✅ P-001 (INFRA): billing block — depende do Owner
-- ✅ P-002 (CÓDIGO): commit `114ffca` removeu `vite` das devDependencies — **corrigido** em `f6cc561`
-- ✅ P-003: Watchdog inoperante por billing — validar quando P-001 resolvido
-- ✅ Workflows `ci.yml` e `watchdog.yml` estruturalmente corretos
-- ✅ Validação: `tsc --noEmit` = 0 erros, `npm run build` = exit 0, `npm audit` = 0 vulns
+- ✅ **BUG 1 — NewClientModal não fecha:** contrato de props alinhado (`onClose`→`onOpenChange`, `onCreated`→`onSuccess`), `companyId` interno via `companyService`
+- ✅ **BUG 2 — NewVehicleModal contrato quebrado:** props alinhadas (`customerId`→`ownerId`, `onCreated`→`onSuccess`), `companyId` interno via `companyService`
+- ✅ **BUG 3 — CustomerSelector vazio ("Nenhum responsável encontrado"):** Identity drift corrigido em `fetchEligibleOsOwners` — usava `auth.uid` direto contra `company_members.user_id` (que espera `public.users.id`). Agora usa `companyService.getCurrentCompanyId()` canônico
+- ✅ Validação via navegador: dropdown lista 10 clientes, seleção ativa veículos, modais abrem/fecham, mecânico funciona
+- ✅ `tsc --noEmit` = 0 erros, `npm run build` = exit 0
 
 ---
 
@@ -127,8 +125,8 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 | Domínio | Service Layer | UI/Pages | Observação |
 |---------|:---:|:---:|-----------|
 | Login / Auth | 🟢 | 🟢 | RLS + JWT Claims corretos. supabase.auth.* é uso legítimo |
-| Ordens de Serviço | 🟢 | 🟢 | ONDA 1 ✅ — serviceOrderService + serviceOrderDetailService migrados |
-| Clientes | 🟢 | 🟢 | ONDA 1 ✅ — customerService migrado |
+| Ordens de Serviço | 🟢 | 🟢 | ONDA 1 ✅ + R22 ✅ — 3 bugs UI corrigidos (modais + identity drift) |
+| Clientes | 🟢 | 🟢 | ONDA 1 ✅ + R22 ✅ — fetchEligibleOsOwners identity drift corrigido |
 | Veículos | 🟢 | 🟢 | ONDA 1 ✅ — vehicleService migrado |
 | Agendamentos | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service migrado. console.* removido |
 | Financeiro | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service correto. console.* removido |
@@ -413,6 +411,7 @@ const { data, error } = await queryService
 
 | Rodada | SHA | Data | O que foi feito | build |
 |--------|-----|------|-----------------|:---:|
+| 22 — Auditoria Funcional OS | `19ce537` | 2026-03-19 | 3 bugs OS corrigidos: identity drift customerService, contrato NewClientModal, contrato NewVehicleModal. Validação via navegador. | ✅ |
 | 21 — Auditoria CI/CD | `f6cc561` | 2026-03-19 | Auditoria 231 runs. Billing block (P-001 Owner). vite restaurado (P-002). Workflows ok. | ✅ |
 | 20 — Hotfix tela branca | `81c79e2` | 2026-03-19 | Fix import type UseFormReturn (ESM hang). Remove landingRedirect plugin. Landing+Login ok. | ✅ |
 | 19 — CRUD knowledge_rules | `88017a0` | 2026-03-18 | CRUD admin web-only. knowledgeEngineService (4 métodos). KnowledgeRulesTab.tsx. Dashboard com Tabs. | ✅ |
@@ -495,55 +494,34 @@ const { data, error } = await queryService
 
 ---
 
-### ✅ HIERARQUIA DOCUMENTAL EFETIVADA (D-011)
-
-| Camada | Escopo | Arquivos |
-|--------|--------|----------|
-| **1 — Governança** (LEI) | Manda em tudo | `GEMINI.md`, `STATUS.md`, `IDENTITY_CONTRACT`, `ROLE_PERMISSION_MATRIX` |
-| **2 — Direção Estratégica** | Visão IA | `docs/10_AI_STRATEGY/*` |
-| **3 — Referência** | Consulta | `docs/02_PRODUCT/`, `docs/03_DB/`, contratos canônicos |
-| **4 — Execução** | Agentes/Operação | `.agents/rules/`, `.agents/skills/`, `.agents/workflows/` |
-| **❌ Legado** (NÃO guia) | Banner ⚠️ | `docs/AI/*`, `00_START_HERE`, `architecture_rules`, `AI_DEVELOPMENT_WORKFLOW` |
-
-### ⚠️ FONTES CONFIÁVEIS (D-010)
-
-| `GEMINI.md` | `docs/AI/*` (toda a pasta — banner ⚠️ LEGADO) |
-| `docs/audit/STATUS.md` | `docs/00_START_HERE.md` (banner ⚠️ LEGADO) |
-| `docs/10_AI_STRATEGY/*` | `docs/01_GOVERNANCE/AI_DEVELOPMENT_WORKFLOW.md` (banner ⚠️ LEGADO) |
-| `.agents/rules/AGENT_MASTER_CONTROL.md` | `docs/01_GOVERNANCE/architecture_rules.md` (banner ⚠️ LEGADO) |
-| `docs/01_GOVERNANCE/ROLE_PERMISSION_MATRIX.md` | |
-| `docs/03_DB/CANONICAL_CONTRACTS.md` | |
-| `.agents/rules/global_rules.md` (atualizado R11) | |
-| `docs/01_GOVERNANCE/SERVICES_AND_DATA_ACCESS.md` (atualizado R11) | |
-
----
-
 ### Contexto para próxima sessão
 
-**Rodada 21 — Auditoria CI/CD + fix vite:**
-- ✅ 231 workflow runs falhados — billing/spending limit do GitHub (P-001 Owner)
-- ✅ `vite` restaurado nas devDependencies (P-002 corrigido — SHA `f6cc561`)
-- ✅ Workflows `ci.yml` e `watchdog.yml` sem erros de config
-- ✅ tsc 0 erros | build exit 0 | npm audit 0 vulns
+**Rodada 22 — Auditoria Funcional OS:**
+- ✅ 3 bugs OS corrigidos e validados via navegador (SHA `19ce537`)
+- ✅ Identity drift em `fetchEligibleOsOwners` eliminado (auth.uid → companyService canônico)
+- ✅ Contratos de modais NewClientModal e NewVehicleModal alinhados
+- ✅ tsc 0 erros | build exit 0 | localhost operacional
 
-**Próxima frente (código):**
+**Próxima frente sugerida:**
 ```
-Antigravity, Rodada 21 concluída. Auditoria CI/CD entregue.
+Antigravity, continue a AUDITORIA FUNCIONAL PONTA A PONTA — ORDEM DE SERVIÇO (web).
 
-CI/CD bloqueado por billing — ação do Owner.
-P-002 (vite) corrigido. Todos os módulos 🟢 (exceto CI 🔴).
-tsc 0 erros. build exit 0. Localhost operacional.
+A Rodada 22 corrigiu seleção de clientes, seleção de veículos e fechamento de modais.
+Agora valide os fluxos restantes:
 
-Ação necessária do Owner:
-1. GitHub Settings → Billing & plans → resolver pagamento/spending limit
-2. Após billing resolvido, disparar workflow_dispatch Watchdog para validar
-3. Nova frente de evolução — qual domínio priorizar?
+1. Criar uma OS completa (cliente + veículo + mecânico + observações) e salvar
+2. Visualizar OS criada na lista
+3. Abrir detalhes da OS e validar todas as tabs
+4. Testar edição de OS (mudar status, adicionar itens)
+5. Testar cadastro de novo cliente via modal e verificar se aparece no dropdown
+6. Testar cadastro de novo veículo via modal e verificar se aparece no dropdown
+
+Modo: validação via navegador + correção imediata.
 ```
 
 ### Itens Owner (paralelos):
-1. **CRÍTICO: Billing GitHub** — resolver pagamento em Settings → Billing & plans
+1. **Billing GitHub** — resolver pagamento em Settings → Billing & plans
 2. **Validar Watchdog** — após billing, disparar manualmente via workflow_dispatch
-3. **Testar CRUD** — acessar `/knowledge-engine` aba "Regras" e validar CRUD real
-4. **Nova frente de evolução** — qual domínio priorizar?
+3. **Nova frente de evolução** — definir próximo domínio prioritário
 
 ---
