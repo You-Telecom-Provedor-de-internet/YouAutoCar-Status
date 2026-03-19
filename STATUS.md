@@ -163,7 +163,7 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 | Observabilidade (components) | 🟢 | 🟢 | ONDA 6A ✅ — 20 components. 29 console.* removidos. UI 100% limpa |
 | Edge Functions | 🟢 | — | 34/34 ativas. dtc_analyze removida R18. test-pdf removida R16. |
 | RLS / Banco | 🟢 | — | 167+ migrations. Multi-role implementado. ROLE_PERMISSION_MATRIX vigente |
-| CI/CD | 🔴 | — | **Billing block** — runners não alocados. Workflows corretos. vite restaurado R21 |
+| CI/CD | 🟡 | — | **Desativado temporariamente** (D-016). Workflows intactos. vite restaurado R21. Validação local obrigatória |
 | **IA Strategy** (`docs/10_AI_STRATEGY/`) | 🟢 | — | 8 docs integrados na governança (GEMINI.md §16). `07_GOVERNANCA` atualizado. |
 | **Agents/Skills** (`.agents/`) | 🟢 | — | 9 skills + 62 workflows + 5 AGE ok. AGENT_MASTER_CONTROL e COMANDOS_RAPIDOS ✅ atualizados R8B |
 
@@ -463,6 +463,7 @@ const { data, error } = await queryService
 | D-013 | **`knowledge_rules` é catálogo global** — sem `company_id`. Regras técnicas universais. Se empresa precisar de regras custom, será tabela separada. | 2026-03-18 | `23ad8c3` |
 | D-014 | **`docs/AI/` inteira arquivada em `_archive/`** — Rodada 17. 8 handoffs/snapshots congelados. Não são fonte de decisão. `00_START_HERE.md` refs AI limpas. | 2026-03-18 | Rodada 17 |
 | D-015 | **`global_rules.md` §10.1 corrigido** — fontes canônicas: GEMINI.md, STATUS.md, 10_AI_STRATEGY, global_rules. Referências a `AI_CONTEXT_SNAPSHOT` e `ARCHITECTURE_OVERVIEW` removidas. | 2026-03-18 | Rodada 17 |
+| D-016 | **GitHub Actions desativado temporariamente** para controle de custos. Workflows intactos (não deletar). Validação obrigatoriamente local: `tsc --noEmit`, `npm run build`, `flutter analyze`. Reativação depende do Owner. | 2026-03-19 | Rodada 21 |
 
 ---
 
@@ -471,9 +472,9 @@ const { data, error } = await queryService
 | ID | Risco | Gravidade | Status | Onda |
 |----|-------|:---------:|--------|:----:|
 | R-001 | `supabase.rpc('import_quotation_prices')` sem tipo gerado — risco de drift silencioso | MÉDIO | EX-005 aceito | Após regen de tipos |
-| **R-CI-001** | **GitHub Actions billing block — 231+ runs sem executar. CI inoperante** | **CRÍTICO** | ⚠️ ABERTO — depende do Owner (Settings → Billing) | R21 |
+| **R-CI-001** | **GitHub Actions desativado (D-016)** — validações devem ser locais | **ACEITO** | ⚠️ ACEITO pelo Owner — desativação controlada por custos | R21 |
 | **R-CI-002** | ~~`vite` removido das devDependencies (commit `114ffca`)~~ | ~~ALTO~~ | ✅ RESOLVIDO — Rodada 21. Restaurado em `f6cc561` | R21 |
-| **R-CI-003** | **Watchdog inoperante — sem monitoramento de saúde desde billing block** | **MÉDIO** | ⚠️ ABERTO — validar após P-001 resolvido | R21 |
+| **R-CI-003** | **Watchdog inoperante enquanto CI desativado (D-016)** | **ACEITO** | ⚠️ ACEITO — reativar junto com CI | R21 |
 | R-002 | ~~3 Dependabot alerts (1 critical, 1 high, 1 moderate)~~ | ~~ALTO~~ | ✅ RESOLVIDO — Rodada 16. Override jspdf >=4.2.1 + vitest ^4.1.0. npm audit 0 vulns. | — |
 | R-003 | ~~Edge Function `test-pdf` em produção sem consumidores~~ | ~~MÉDIO~~ | ✅ RESOLVIDO — Rodada 16. 3 arquivos deletados. | — |
 | R-004 | ~~2 migrations com timestamp `20260310000000`~~ | ~~MÉDIO~~ | ✅ RESOLVIDO — Rodada 16. Renomeada para `20260310000001`. | — |
