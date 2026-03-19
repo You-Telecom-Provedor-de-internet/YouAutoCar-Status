@@ -90,8 +90,8 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 24C |
-| **SHA código** | `6152a84` |
+| **Rodada** | 25 |
+| **SHA código** | `efb0193` |
 | **SHA status** | (atualizar após commit) |
 | **Data** | 2026-03-19 |
 | **Modo** | EVOLUÇÃO DE PRODUTO — Auditoria Funcional OS (web) |
@@ -99,16 +99,18 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 | **build** | ✅ exit 0 |
 | **flutter analyze** | ✅ 0 erros |
 | **ONDA ativa** | Auditoria Funcional Ponta a Ponta |
-| **Próxima ação obrigatória** | Validar tabs restantes na OS (tabs OBD, Checklist, AI Copilot, etc.) |
+| **Próxima ação obrigatória** | Continuar validação tabs restantes na OS |
 
 ### Resumo da última rodada
 
-**Rodada 24C — Fix Catálogo de Peças e Serviços na OS:**
+**Rodada 25 — Fix Pipeline parse-scan-pdf (CORS + Reescrita):**
 
-- ✅ **BUG-1 partService.ts:** Schema drift `parts_catalog` — query usava `default_price`/`sku` inexistentes, corrigido para `average_price` (sem `sku`). Erro HTTP 400 abortava TODA a busca.
-- ✅ **BUG-2 serviceOrderDetailService.ts:** `searchLaborCatalog` usava `.maybeSingle()` que falha com 2+ memberships. Corrigido para `.limit(1)`. Usuário admin com 2 empresas era o cenário de falha.
-- ✅ Validado via browser: serviços "troca" → 20+ resultados, peças "freio" → catálogo + global
-- ✅ `tsc --noEmit` = 0 erros, `npm run build` = OK
+- ✅ **Causa raiz**: Header `x-request-id` não listado em `Access-Control-Allow-Headers` — CORS bloqueava o POST
+- ✅ **CORS fix**: `x-request-id` adicionado ao CORS headers
+- ✅ **Reescrita Edge Function**: imports dinâmicos `pdf-parse`/`Buffer`, fallback manual, logging canônico via `createLogger`
+- ✅ **Deploy**: v12 → v16 via Supabase CLI
+- ✅ **Validação**: DTCs P0325 e P0123 extraídos do Napro.pdf com sucesso (browser test)
+- ✅ `npm run build` = exit 0
 
 ---
 
@@ -410,6 +412,7 @@ const { data, error } = await queryService
 
 | Rodada | SHA | Data | O que foi feito | build |
 |--------|-----|------|-----------------|:---:|
+| 25 — Fix Pipeline parse-scan-pdf | `efb0193` | 2026-03-19 | CORS fix (x-request-id). Reescrita EF: imports dinâmicos, fallback, createLogger. v12→v16. DTCs P0325+P0123 extraídos Napro.pdf ✅ | ✅ |
 | 24C — Fix Catálogo Peças+Serviços | `6152a84` | 2026-03-19 | BUG-1: schema drift parts_catalog (default_price→average_price). BUG-2: .maybeSingle()→.limit(1) para multi-membership. Ambos validados via browser | ✅ |
 | 24 — Schema Drift + Bug 400 Checklist | `4d7f62d` | 2026-03-19 | 12 correções: 3 schema drift (diagnosticService), 2 tabela/EF errada (DiagnosticsTab), msg enganosa (diagnosticUploadService), 4 console→logger (useDiagnostics), bug 400 Checklist (categorias+status inválidos), CHECKLIST_STATUS_CONFIG migrado para pass/warn/fail | ✅ |
 | 23 — Fix Identity Drift Triggers | `dac2269` | 2026-03-19 | FK violation 23503 corrigida: 2 triggers (notify_on_os_created, notify_on_os_status_change) usavam public.users.id em vez de auth.users.id. Toast [object Object] fix (3 arquivos). OS criada com sucesso. | ✅ |
@@ -498,25 +501,25 @@ const { data, error } = await queryService
 
 ### Contexto para próxima sessão
 
-**Rodada 24C — Fix Catálogo Peças+Serviços:**
-- ✅ BUG-1: schema drift parts_catalog corrigido (SHA `6152a84`)
-- ✅ BUG-2: multi-membership .maybeSingle() corrigido
-- ✅ Ambos validados via browser
+**Rodada 25 — Fix Pipeline parse-scan-pdf:**
+- ✅ CORS fix + reescrita Edge Function (v12→v16)
+- ✅ DTCs P0325 e P0123 extraídos do Napro.pdf (browser)
+- ✅ Build OK (SHA `efb0193`)
 
 **Próxima frente sugerida:**
 ```
 Antigravity, continue a AUDITORIA FUNCIONAL PONTA A PONTA — ORDEM DE SERVIÇO (web).
 
-Rodada 24C corrigiu catálogos de peças e serviços.
+Rodada 25 restaurou a pipeline de importação de PDF scanner (parse-scan-pdf).
 Agora valide as tabs restantes via navegador:
 
 1. Testar aba Checklist (gerar, salvar, mudar status)
-2. Testar aba OBD (importar PDF, DTC manual)
-3. Testar aba AI Copilot (geração de análise)
-4. Testar aba Hipóteses (geração IA, DTCs)
-5. Testar edição de OS (mudar status, serviços, peças)
-6. Testar aba Fotos e Evidências
-7. Testar geração/envio de PDF e cotação
+2. Testar aba AI Copilot (geração de análise IA)
+3. Testar aba Hipóteses (geração IA automática a partir de DTCs)
+4. Testar edição de OS (mudar status, adicionar serviços e peças)
+5. Testar aba Fotos e Evidências (upload, visualização)
+6. Testar geração/envio de PDF e cotação
+7. Testar fluxo completo: criar OS → importar PDF → gerar hipótese → resolver
 
 Credenciais: haisemberg@youtelecom.com.br / 123456
 Modo: validação via navegador + correção imediata.
