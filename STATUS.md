@@ -90,27 +90,28 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 20 |
-| **SHA código** | `81c79e2` |
-| **SHA status** | `4dba65f` |
+| **Rodada** | 21 |
+| **SHA código** | `f6cc561` |
+| **SHA status** | `285a477` |
 | **Data** | 2026-03-19 |
-| **Modo** | EVOLUÇÃO DE PRODUTO — hotfix tela branca |
+| **Modo** | EVOLUÇÃO DE PRODUTO — Auditoria CI/CD + fix vite |
 | **tsc** | ✅ 0 erros |
-| **build** | ✅ (dev server validado) |
+| **build** | ✅ exit 0 (31.89s) |
 | **flutter analyze** | ✅ 0 erros |
-| **ONDA ativa** | Manutenção — hotfix crítico |
-| **Próxima ação obrigatória** | Owner decide próxima frente de evolução |
+| **ONDA ativa** | Manutenção CI/CD |
+| **Próxima ação obrigatória** | Owner: resolver billing GitHub (P-001) |
 
 ### Resumo da última rodada
 
-**Rodada 20 — Hotfix tela branca localhost:**
+**Rodada 21 — Auditoria CI/CD + fix vite:**
 
-- ✅ Causa raiz: `import { UseFormReturn }` em `VehicleFormDialog.tsx` — ESM não resolve tipos TS como exports, travando module graph inteiro
-- ✅ Fix: `import type { UseFormReturn }` — correção cirúrgica de 1 linha
-- ✅ Plugin `landingRedirect` removido de `vite.config.ts` — redirecionava `/` para `landing.html` inexistente
-- ✅ `main.tsx` restaurado ao original
-- ✅ Validação: Landing Page + Login renderizam. `tsc --noEmit` = 0 erros
-- ✅ Diagnóstico por isolamento: React puro → +Sentry → +ErrorBoundary → +App (dynamic import) → erro capturado
+- ✅ Auditoria completa: 231 workflow runs falhados — causa = billing/spending limit do GitHub
+- ✅ Nenhum job sequer iniciou — runners bloqueados por pagamento
+- ✅ P-001 (INFRA): billing block — depende do Owner
+- ✅ P-002 (CÓDIGO): commit `114ffca` removeu `vite` das devDependencies — **corrigido** em `f6cc561`
+- ✅ P-003: Watchdog inoperante por billing — validar quando P-001 resolvido
+- ✅ Workflows `ci.yml` e `watchdog.yml` estruturalmente corretos
+- ✅ Validação: `tsc --noEmit` = 0 erros, `npm run build` = exit 0, `npm audit` = 0 vulns
 
 ---
 
@@ -162,7 +163,7 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 | Observabilidade (components) | 🟢 | 🟢 | ONDA 6A ✅ — 20 components. 29 console.* removidos. UI 100% limpa |
 | Edge Functions | 🟢 | — | 34/34 ativas. dtc_analyze removida R18. test-pdf removida R16. |
 | RLS / Banco | 🟢 | — | 167+ migrations. Multi-role implementado. ROLE_PERMISSION_MATRIX vigente |
-| CI/CD | 🟢 | — | ci.yml + watchdog.yml verdes |
+| CI/CD | 🔴 | — | **Billing block** — runners não alocados. Workflows corretos. vite restaurado R21 |
 | **IA Strategy** (`docs/10_AI_STRATEGY/`) | 🟢 | — | 8 docs integrados na governança (GEMINI.md §16). `07_GOVERNANCA` atualizado. |
 | **Agents/Skills** (`.agents/`) | 🟢 | — | 9 skills + 62 workflows + 5 AGE ok. AGENT_MASTER_CONTROL e COMANDOS_RAPIDOS ✅ atualizados R8B |
 
@@ -412,6 +413,7 @@ const { data, error } = await queryService
 
 | Rodada | SHA | Data | O que foi feito | build |
 |--------|-----|------|-----------------|:---:|
+| 21 — Auditoria CI/CD | `f6cc561` | 2026-03-19 | Auditoria 231 runs. Billing block (P-001 Owner). vite restaurado (P-002). Workflows ok. | ✅ |
 | 20 — Hotfix tela branca | `81c79e2` | 2026-03-19 | Fix import type UseFormReturn (ESM hang). Remove landingRedirect plugin. Landing+Login ok. | ✅ |
 | 19 — CRUD knowledge_rules | `88017a0` | 2026-03-18 | CRUD admin web-only. knowledgeEngineService (4 métodos). KnowledgeRulesTab.tsx. Dashboard com Tabs. | ✅ |
 | 18 — Remoção dtc_analyze | `9afc200` | 2026-03-18 | EF dtc_analyze removida do repo. Zero consumidores. analisar-dtc canônica. R-012 resolvido. | ✅ |
@@ -469,6 +471,9 @@ const { data, error } = await queryService
 | ID | Risco | Gravidade | Status | Onda |
 |----|-------|:---------:|--------|:----:|
 | R-001 | `supabase.rpc('import_quotation_prices')` sem tipo gerado — risco de drift silencioso | MÉDIO | EX-005 aceito | Após regen de tipos |
+| **R-CI-001** | **GitHub Actions billing block — 231+ runs sem executar. CI inoperante** | **CRÍTICO** | ⚠️ ABERTO — depende do Owner (Settings → Billing) | R21 |
+| **R-CI-002** | ~~`vite` removido das devDependencies (commit `114ffca`)~~ | ~~ALTO~~ | ✅ RESOLVIDO — Rodada 21. Restaurado em `f6cc561` | R21 |
+| **R-CI-003** | **Watchdog inoperante — sem monitoramento de saúde desde billing block** | **MÉDIO** | ⚠️ ABERTO — validar após P-001 resolvido | R21 |
 | R-002 | ~~3 Dependabot alerts (1 critical, 1 high, 1 moderate)~~ | ~~ALTO~~ | ✅ RESOLVIDO — Rodada 16. Override jspdf >=4.2.1 + vitest ^4.1.0. npm audit 0 vulns. | — |
 | R-003 | ~~Edge Function `test-pdf` em produção sem consumidores~~ | ~~MÉDIO~~ | ✅ RESOLVIDO — Rodada 16. 3 arquivos deletados. | — |
 | R-004 | ~~2 migrations com timestamp `20260310000000`~~ | ~~MÉDIO~~ | ✅ RESOLVIDO — Rodada 16. Renomeada para `20260310000001`. | — |
@@ -514,24 +519,30 @@ const { data, error } = await queryService
 
 ### Contexto para próxima sessão
 
-**Rodada 20 — Hotfix tela branca resolvido:**
-- ✅ Causa raiz: `import { UseFormReturn }` (tipo importado como valor) travava ESM module graph
-- ✅ Plugin `landingRedirect` removido (redirecionava `/` para arquivo inexistente)
-- ✅ Landing Page + Login renderizam. tsc 0 erros.
+**Rodada 21 — Auditoria CI/CD + fix vite:**
+- ✅ 231 workflow runs falhados — billing/spending limit do GitHub (P-001 Owner)
+- ✅ `vite` restaurado nas devDependencies (P-002 corrigido — SHA `f6cc561`)
+- ✅ Workflows `ci.yml` e `watchdog.yml` sem erros de config
+- ✅ tsc 0 erros | build exit 0 | npm audit 0 vulns
 
 **Próxima frente (código):**
 ```
-Antigravity, Rodada 20 concluída. Hotfix tela branca resolvido.
+Antigravity, Rodada 21 concluída. Auditoria CI/CD entregue.
 
-Todos os módulos 🟢. tsc 0 erros. Localhost operacional.
+CI/CD bloqueado por billing — ação do Owner.
+P-002 (vite) corrigido. Todos os módulos 🟢 (exceto CI 🔴).
+tsc 0 erros. build exit 0. Localhost operacional.
 
-O que decidir:
-1. Nova frente de evolução — qual domínio priorizar?
-2. Validar CRUD knowledge_rules em produção
+Ação necessária do Owner:
+1. GitHub Settings → Billing & plans → resolver pagamento/spending limit
+2. Após billing resolvido, disparar workflow_dispatch Watchdog para validar
+3. Nova frente de evolução — qual domínio priorizar?
 ```
 
 ### Itens Owner (paralelos):
-1. **Testar CRUD** — acessar `/knowledge-engine` aba "Regras" e validar CRUD real
-2. **Nova frente de evolução** — qual domínio priorizar após Knowledge Engine?
+1. **CRÍTICO: Billing GitHub** — resolver pagamento em Settings → Billing & plans
+2. **Validar Watchdog** — após billing, disparar manualmente via workflow_dispatch
+3. **Testar CRUD** — acessar `/knowledge-engine` aba "Regras" e validar CRUD real
+4. **Nova frente de evolução** — qual domínio priorizar?
 
 ---
