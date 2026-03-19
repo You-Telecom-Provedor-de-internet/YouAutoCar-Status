@@ -90,27 +90,27 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 19 |
-| **SHA código** | `88017a0` |
-| **SHA status** | `a856d3d` |
-| **Data** | 2026-03-18 |
-| **Modo** | EVOLUÇÃO DE PRODUTO — CRUD knowledge_rules |
+| **Rodada** | 20 |
+| **SHA código** | `81c79e2` |
+| **SHA status** | pendente |
+| **Data** | 2026-03-19 |
+| **Modo** | EVOLUÇÃO DE PRODUTO — hotfix tela branca |
 | **tsc** | ✅ 0 erros |
-| **build** | ✅ exit 0 |
+| **build** | ✅ (dev server validado) |
 | **flutter analyze** | ✅ 0 erros |
-| **ONDA ativa** | ONDA 7 — CRUD knowledge_rules admin web-only |
+| **ONDA ativa** | Manutenção — hotfix crítico |
 | **Próxima ação obrigatória** | Owner decide próxima frente de evolução |
 
 ### Resumo da última rodada
 
-**Rodada 19 — CRUD admin knowledge_rules (web-only):**
+**Rodada 20 — Hotfix tela branca localhost:**
 
-- ✅ Auditoria §16 completa (5 blocos) — plano aprovado pelo Owner
-- ✅ `knowledgeEngineService.ts`: 4 métodos CRUD adicionados (`listRules`, `createRule`, `updateRule`, `deleteRule`)
-- ✅ `KnowledgeRulesTab.tsx`: novo componente (330 linhas) — tabela, KPIs, filtros, dialog CRUD, editor JSON sensor_pattern, lista dinâmica recommended_tests, confirmação exclusão
-- ✅ `KnowledgeEngineDashboard.tsx`: refatorado com Tabs (Dashboard + Regras)
-- ✅ Zero estruturas paralelas — reutilização total de service existente + tipos gerados + componentes shadcn/ui
-- ✅ tsc 0 erros | build exit 0
+- ✅ Causa raiz: `import { UseFormReturn }` em `VehicleFormDialog.tsx` — ESM não resolve tipos TS como exports, travando module graph inteiro
+- ✅ Fix: `import type { UseFormReturn }` — correção cirúrgica de 1 linha
+- ✅ Plugin `landingRedirect` removido de `vite.config.ts` — redirecionava `/` para `landing.html` inexistente
+- ✅ `main.tsx` restaurado ao original
+- ✅ Validação: Landing Page + Login renderizam. `tsc --noEmit` = 0 erros
+- ✅ Diagnóstico por isolamento: React puro → +Sentry → +ErrorBoundary → +App (dynamic import) → erro capturado
 
 ---
 
@@ -412,6 +412,7 @@ const { data, error } = await queryService
 
 | Rodada | SHA | Data | O que foi feito | build |
 |--------|-----|------|-----------------|:---:|
+| 20 — Hotfix tela branca | `81c79e2` | 2026-03-19 | Fix import type UseFormReturn (ESM hang). Remove landingRedirect plugin. Landing+Login ok. | ✅ |
 | 19 — CRUD knowledge_rules | `88017a0` | 2026-03-18 | CRUD admin web-only. knowledgeEngineService (4 métodos). KnowledgeRulesTab.tsx. Dashboard com Tabs. | ✅ |
 | 18 — Remoção dtc_analyze | `9afc200` | 2026-03-18 | EF dtc_analyze removida do repo. Zero consumidores. analisar-dtc canônica. R-012 resolvido. | ✅ |
 | 17 — Limpeza Legado | `2f1c8fa` | 2026-03-18 | 8 docs/AI → _archive. Fallback OpenAI removido. global_rules §10.1 corrigido. dtc_analyze DEPRECATED. | ✅ |
@@ -513,23 +514,20 @@ const { data, error } = await queryService
 
 ### Contexto para próxima sessão
 
-**Rodada 19 — CRUD knowledge_rules implementado:**
-- ✅ 4 métodos CRUD no `knowledgeEngineService.ts`
-- ✅ `KnowledgeRulesTab.tsx` — tabela, KPIs, filtros, dialog CRUD, editor JSON, lista dinâmica testes
-- ✅ `KnowledgeEngineDashboard.tsx` — refatorado com Tabs (Dashboard + Regras)
-- ✅ Zero estruturas paralelas — reutilização total de service + tipos + shadcn/ui
-- ✅ tsc 0 erros | build exit 0
+**Rodada 20 — Hotfix tela branca resolvido:**
+- ✅ Causa raiz: `import { UseFormReturn }` (tipo importado como valor) travava ESM module graph
+- ✅ Plugin `landingRedirect` removido (redirecionava `/` para arquivo inexistente)
+- ✅ Landing Page + Login renderizam. tsc 0 erros.
 
 **Próxima frente (código):**
 ```
-Antigravity, Rodada 19 concluída. CRUD knowledge_rules admin web-only implementado.
+Antigravity, Rodada 20 concluída. Hotfix tela branca resolvido.
 
-Todos os módulos 🟢. tsc 0 erros. build exit 0.
-Domínio Knowledge Engine agora tem dashboard + CRUD admin + insights.
+Todos os módulos 🟢. tsc 0 erros. Localhost operacional.
 
 O que decidir:
 1. Nova frente de evolução — qual domínio priorizar?
-2. Testes em produção do CRUD — validar fluxo real com regras existentes
+2. Validar CRUD knowledge_rules em produção
 ```
 
 ### Itens Owner (paralelos):
