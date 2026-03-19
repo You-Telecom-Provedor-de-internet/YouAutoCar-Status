@@ -90,26 +90,25 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 
 | Campo | Valor |
 |-------|-------|
-| **Rodada** | 22 |
-| **SHA código** | `19ce537` |
+| **Rodada** | 23 |
+| **SHA código** | `dac2269` |
 | **SHA status** | (atualizar após commit) |
 | **Data** | 2026-03-19 |
 | **Modo** | EVOLUÇÃO DE PRODUTO — Auditoria Funcional OS (web) |
 | **tsc** | ✅ 0 erros |
-| **build** | ✅ exit 0 (27.24s) |
+| **build** | ✅ exit 0 |
 | **flutter analyze** | ✅ 0 erros |
 | **ONDA ativa** | Auditoria Funcional Ponta a Ponta |
-| **Próxima ação obrigatória** | Continuar auditoria funcional (outros fluxos OS) |
+| **Próxima ação obrigatória** | Testar fluxos restantes (edição OS, tabs, cadastro via modais) |
 
 ### Resumo da última rodada
 
-**Rodada 22 — Auditoria Funcional OS (web) — validação via navegador:**
+**Rodada 23 — Fix Identity Drift Triggers + Toast [object Object]:**
 
-- ✅ **BUG 1 — NewClientModal não fecha:** contrato de props alinhado (`onClose`→`onOpenChange`, `onCreated`→`onSuccess`), `companyId` interno via `companyService`
-- ✅ **BUG 2 — NewVehicleModal contrato quebrado:** props alinhadas (`customerId`→`ownerId`, `onCreated`→`onSuccess`), `companyId` interno via `companyService`
-- ✅ **BUG 3 — CustomerSelector vazio ("Nenhum responsável encontrado"):** Identity drift corrigido em `fetchEligibleOsOwners` — usava `auth.uid` direto contra `company_members.user_id` (que espera `public.users.id`). Agora usa `companyService.getCurrentCompanyId()` canônico
-- ✅ Validação via navegador: dropdown lista 10 clientes, seleção ativa veículos, modais abrem/fecham, mecânico funciona
-- ✅ `tsc --noEmit` = 0 erros, `npm run build` = exit 0
+- ✅ **BUG CRÍTICO — FK Violation 23503 ao criar OS:** Identity drift nos triggers `notify_on_os_created` e `notify_on_os_status_change`. Ambos alimentavam `notifications.user_id` (FK→`auth.users.id`) com `public.users.id`. Corrigido via migrations que resolvem `auth_id` via JOIN
+- ✅ **Toast [object Object]:** `PostgrestError` não é `instanceof Error` — `String(error)` → `[object Object]`. Corrigido em `CreateServiceOrder.tsx`, `NewClientModal.tsx`, `NewVehicleModal.tsx` para verificar `.message`
+- ✅ **OS criada com sucesso** via navegador: OS `#4d5e0b53` status `draft` confirmada no banco
+- ✅ `tsc --noEmit` = 0 erros
 
 ---
 
@@ -125,8 +124,8 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 | Domínio | Service Layer | UI/Pages | Observação |
 |---------|:---:|:---:|-----------|
 | Login / Auth | 🟢 | 🟢 | RLS + JWT Claims corretos. supabase.auth.* é uso legítimo |
-| Ordens de Serviço | 🟢 | 🟢 | ONDA 1 ✅ + R22 ✅ — 3 bugs UI corrigidos (modais + identity drift) |
-| Clientes | 🟢 | 🟢 | ONDA 1 ✅ + R22 ✅ — fetchEligibleOsOwners identity drift corrigido |
+| Ordens de Serviço | 🟢 | 🟢 | ONDA 1 ✅ + R22/R23 ✅ — UI bugs + identity drift triggers corrigidos |
+| Clientes | 🟢 | 🟢 | ONDA 1 ✅ + R22/R23 ✅ — fetchEligibleOsOwners + triggers notificação |
 | Veículos | 🟢 | 🟢 | ONDA 1 ✅ — vehicleService migrado |
 | Agendamentos | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service migrado. console.* removido |
 | Financeiro | 🟢 | 🟢 | ONDA 2 ✅ + ONDA 5 ✅ — service correto. console.* removido |
@@ -143,7 +142,7 @@ Quando o Owner abrir uma nova sessão com o ChatGPT:
 | Guincho/Tow | 🟢 | 🟢 | ONDA 3 ✅ — já correto. queryService em todo o arquivo |
 | Knowledge Engine | 🟢 | 🟢 | ONDA 7 ✅ — migrado. ~~EX-011~~ resolvido Fase 2 |
 | Scanner Context | 🟢 | 🟢 | ONDA 4 ✅ — migrado. 3 tabelas sem tipo → interface local |
-| Notificações | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ — service + pages migrados |
+| Notificações | 🟢 | 🟢 | ONDA 4 ✅ + R23 ✅ — identity drift triggers corrigido (`auth_id` via JOIN) |
 | Auditoria | 🟢 | 🟢 | ONDA 4 ✅ + ONDA 5 ✅ — service + pages migrados |
 | Health Score | 🟢 | 🟢 | ONDA 4 ✅ — migrado. invokeEdgeFunction preservado |
 | Reparos Confirmados | 🟢 | 🟢 | ONDA 4 ✅ — migrado. EX-001 preservada |
@@ -411,6 +410,7 @@ const { data, error } = await queryService
 
 | Rodada | SHA | Data | O que foi feito | build |
 |--------|-----|------|-----------------|:---:|
+| 23 — Fix Identity Drift Triggers | `dac2269` | 2026-03-19 | FK violation 23503 corrigida: 2 triggers (notify_on_os_created, notify_on_os_status_change) usavam public.users.id em vez de auth.users.id. Toast [object Object] fix (3 arquivos). OS criada com sucesso. | ✅ |
 | 22 — Auditoria Funcional OS | `19ce537` | 2026-03-19 | 3 bugs OS corrigidos: identity drift customerService, contrato NewClientModal, contrato NewVehicleModal. Validação via navegador. | ✅ |
 | 21 — Auditoria CI/CD | `f6cc561` | 2026-03-19 | Auditoria 231 runs. Billing block (P-001 Owner). vite restaurado (P-002). Workflows ok. | ✅ |
 | 20 — Hotfix tela branca | `81c79e2` | 2026-03-19 | Fix import type UseFormReturn (ESM hang). Remove landingRedirect plugin. Landing+Login ok. | ✅ |
@@ -496,26 +496,26 @@ const { data, error } = await queryService
 
 ### Contexto para próxima sessão
 
-**Rodada 22 — Auditoria Funcional OS:**
-- ✅ 3 bugs OS corrigidos e validados via navegador (SHA `19ce537`)
-- ✅ Identity drift em `fetchEligibleOsOwners` eliminado (auth.uid → companyService canônico)
-- ✅ Contratos de modais NewClientModal e NewVehicleModal alinhados
-- ✅ tsc 0 erros | build exit 0 | localhost operacional
+**Rodada 23 — Fix Identity Drift Triggers:**
+- ✅ FK violation 23503 corrigida: triggers de notificação usavam `public.users.id` em vez de `auth.users.id` (SHA `dac2269`)
+- ✅ Toast `[object Object]` corrigido em 3 arquivos
+- ✅ OS criada com sucesso via navegador (#4d5e0b53)
+- ✅ tsc 0 erros | localhost operacional
 
 **Próxima frente sugerida:**
 ```
 Antigravity, continue a AUDITORIA FUNCIONAL PONTA A PONTA — ORDEM DE SERVIÇO (web).
 
-A Rodada 22 corrigiu seleção de clientes, seleção de veículos e fechamento de modais.
+As Rodadas 22-23 corrigiram todos os bugs de criação de OS.
 Agora valide os fluxos restantes:
 
-1. Criar uma OS completa (cliente + veículo + mecânico + observações) e salvar
-2. Visualizar OS criada na lista
-3. Abrir detalhes da OS e validar todas as tabs
-4. Testar edição de OS (mudar status, adicionar itens)
-5. Testar cadastro de novo cliente via modal e verificar se aparece no dropdown
-6. Testar cadastro de novo veículo via modal e verificar se aparece no dropdown
+1. Abrir detalhes de uma OS e validar todas as tabs
+2. Testar edição de OS (mudar status, adicionar itens, orçamento)
+3. Testar cadastro de novo cliente via modal e verificar se aparece no dropdown
+4. Testar cadastro de novo veículo via modal e verificar se aparece no dropdown
+5. Testar fluxo de aprovação/rejeição de OS
 
+Credenciais: haisemberg@youtelecom.com.br / Cd1aamssS$$
 Modo: validação via navegador + correção imediata.
 ```
 
